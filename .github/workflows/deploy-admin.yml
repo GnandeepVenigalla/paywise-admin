@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'Paywise_Admin/**'
   workflow_dispatch:
 
 jobs:
@@ -20,21 +18,18 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: Paywise_Admin/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        working-directory: ./Paywise_Admin
         run: npm ci
 
       - name: Build Dashboard
-        working-directory: ./Paywise_Admin
         run: npm run build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} # Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Required
-          working-directory: ./Paywise_Admin
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
