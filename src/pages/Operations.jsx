@@ -44,6 +44,53 @@ const Operations = () => {
   const handleSelectAllAlerts = (e) => setSelectedAlerts(e.target.checked ? alerts.map(a => a.id) : []);
   const handleSelectAlert = (id) => setSelectedAlerts(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
+  const [bugs, setBugs] = useState([]);
+  const [newBug, setNewBug] = useState('');
+  const [reportingBug, setReportingBug] = useState(false);
+
+  const fetchBugs = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/api/admin/release/bugs', { headers: { 'Authorization': `Bearer ${token}` } });
+      setBugs(res.data);
+    } catch (err) {
+      console.error('Failed to fetch bugs');
+    }
+  };
+
+  useEffect(() => {
+    fetchBugs();
+  }, []);
+
+  const submitBug = async () => {
+    if (!newBug.trim()) return;
+    setReportingBug(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('/api/admin/release/bugs', { description: newBug, severity: 'medium' }, { headers: { 'Authorization': `Bearer ${token}` } });
+      setNewBug('');
+      fetchBugs();
+      setMessage('Bug reported successfully! Development team notified.');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (err) {
+      setMessage('Failed to report bug');
+    } finally {
+      setReportingBug(false);
+    }
+  };
+
+  const resolveBug = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`/api/admin/release/bugs/${id}/resolve`, {}, { headers: { 'Authorization': `Bearer ${token}` } });
+      fetchBugs();
+      setMessage('Bug marked as resolved!');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (err) {
+      setMessage('Failed to resolve bug');
+    }
+  };
+
   const handleBatchAlertAction = (action) => {
     handleAction(`[BATCH ${selectedAlerts.length} items]`, action);
     setSelectedAlerts([]);
@@ -313,6 +360,63 @@ const Operations = () => {
                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Last Deploy</p>
                        <p className="text-xs text-white font-bold">4h 12m ago</p>
                     </div>
+                 </div>
+              </div>
+
+              {/* Bug Reporting Session */}
+              <div className="mt-10 pt-8 border-t border-white/5">
+                 <h4 className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-4">Beta Bug Reports & Observations</h4>
+                 
+                 <div className="flex gap-3 mb-6">
+                    <input 
+                      type="text" 
+                      value={newBug}
+                      onChange={(e) => setNewBug(e.target.value)}
+                      placeholder="Describe the bug or issue observed..."
+                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all"
+                    />
+                    <button 
+                      onClick={submitBug}
+                      disabled={reportingBug || !newBug.trim()}
+                      className="px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all h-[46px] flex items-center gap-2"
+                    >
+                       {reportingBug ? <Activity className="w-4 h-4 animate-spin" /> : <FileWarning className="w-4 h-4" />}
+                       Save Log
+                    </button>
+                 </div>
+
+                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                    {bugs.length > 0 ? (
+                      bugs.map(bug => (
+                        <div key={bug._id} className={`p-4 rounded-xl border flex items-center justify-between transition-all ${
+                          bug.status === 'resolved' ? 'bg-emerald-500/5 border-emerald-500/10 opacity-60' : 'bg-white/5 border-white/10'
+                        }`}>
+                           <div className="flex items-center gap-4">
+                              <div className={`w-2 h-2 rounded-full ${bug.status === 'resolved' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></div>
+                              <div>
+                                 <p className={`text-sm ${bug.status === 'resolved' ? 'text-slate-500 line-through' : 'text-slate-200'} font-medium`}>
+                                    {bug.description}
+                                 </p>
+                                 <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">
+                                    Reported by {bug.reporter?.username || 'Admin'} • {new Date(bug.createdAt).toLocaleDateString()}
+                                 </p>
+                              </div>
+                           </div>
+                           {bug.status !== 'resolved' && (
+                             <button 
+                               onClick={() => resolveBug(bug._id)}
+                               className="p-2 hover:bg-emerald-500/20 text-emerald-500 rounded-lg transition-all group"
+                             >
+                                <CheckCircle className="w-4 h-4" />
+                             </button>
+                           )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 bg-white/5 border border-dashed border-white/10 rounded-2xl">
+                         <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">No bugs reported yet in this cycle</p>
+                      </div>
+                    )}
                  </div>
               </div>
            </div>
