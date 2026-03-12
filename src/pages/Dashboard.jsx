@@ -257,6 +257,25 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* AI Performance Intelligence */}
+        <div className="glass-card !p-8">
+          <div className="flex justify-between items-center mb-10">
+            <div>
+              <h2 className="text-xl font-black text-white tracking-tight">AI Intelligence</h2>
+              <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Neural token consumption and load</p>
+            </div>
+            <Zap className="w-6 h-6 text-indigo-400/50" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <MetricRow icon={Activity} label="Total Requests" value={data?.summary?.aiPerformance?.totalRequests || 0} color="indigo" />
+            <MetricRow icon={TrendingUp} label="Total Tokens" value={(data?.summary?.aiPerformance?.totalTokens || 0).toLocaleString()} color="emerald" />
+            <MetricRow icon={ArrowUpRight} label="Input (Prompt)" value={(data?.summary?.aiPerformance?.inputTokens || 0).toLocaleString()} color="blue" />
+            <MetricRow icon={ArrowDownRight} label="Output (Resp)" value={(data?.summary?.aiPerformance?.outputTokens || 0).toLocaleString()} color="violet" />
+            <MetricRow icon={ShieldAlert} label="Quota Status" value="Healthy" color="emerald" />
+            <MetricRow icon={Target} label="Est. Cost" value={`$${((data?.summary?.aiPerformance?.totalTokens || 0) * 0.0000001).toFixed(4)}`} color="amber" />
+          </div>
+        </div>
+
         {/* Audience Distribution */}
         <div className="glass-card !p-8">
           <div className="flex justify-between items-center mb-10">

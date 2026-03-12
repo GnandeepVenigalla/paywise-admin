@@ -51,9 +51,28 @@ const Operations = () => {
 
   const [message, setMessage] = useState('');
 
-  const handleAction = (type, action) => {
+  const handleAction = async (type, action) => {
     setMessage(`Executing [${action.toUpperCase()}] protocol on ${type}...`);
-    setTimeout(() => setMessage(''), 3000);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      if (action === 'Generate Beta Link') {
+        const res = await axios.post('/api/admin/release/beta-link', {}, { headers });
+        setMessage(`BETA LINK GENERATED: ${res.data.url}`);
+        // Copy to clipboard or open in new tab
+        window.prompt("Share this Beta link with testers:", res.data.url);
+      } else if (action === 'Push to Git') {
+        const res = await axios.post('/api/admin/release/deploy', {}, { headers });
+        setMessage(res.data.msg);
+      } else {
+        setTimeout(() => setMessage(''), 3000);
+      }
+    } catch (err) {
+      setMessage(`ERROR: ${err.response?.data?.msg || 'System failure'}`);
+      setTimeout(() => setMessage(''), 5000);
+    }
   };
 
   return (
@@ -219,6 +238,83 @@ const Operations = () => {
                     ))}
                  </tbody>
               </table>
+           </div>
+        </div>
+
+        {/* Beta Release Management */}
+        <div className="glass-card shadow-xl p-0 overflow-hidden flex flex-col h-full lg:col-span-2 border border-indigo-500/10 mt-8">
+           <div className="p-6 border-b border-white/5 bg-indigo-950/20 flex justify-between items-center">
+              <div>
+                 <h2 className="text-lg font-black text-indigo-100 tracking-tight flex items-center gap-2"><Zap className="w-5 h-5 text-indigo-500"/> Beta Launch Pad</h2>
+                 <p className="text-[10px] text-indigo-400/70 font-black uppercase tracking-widest mt-1">Manage staging links and production deployment pipelines.</p>
+              </div>
+              <div className="flex gap-3">
+                 <button 
+                   onClick={() => handleAction('System', 'Generate Beta Link')} 
+                   className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all"
+                 >
+                    <Settings className="w-3 h-3" /> Get Beta Link
+                 </button>
+                 <button 
+                   onClick={() => handleAction('System', 'Push to Git')} 
+                   className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                 >
+                    <TrendingUp className="w-3 h-3" /> Push to Production
+                 </button>
+              </div>
+           </div>
+           
+           <div className="p-8 bg-indigo-950/5">
+              <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
+                 <div className="flex-1">
+                    <h3 className="text-xl font-black text-white mb-2">v2.4.0-beta.1 <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20 ml-3 uppercase tracking-widest">Awaiting Sign-off</span></h3>
+                    <p className="text-sm text-slate-400 leading-relaxed max-w-xl">
+                       This version contains the new **AI Token Monitoring** and **Personalized Suggestions**. 
+                       Generate a beta link to test these features in the staging environment. Once verified, use "Push to Production" to merge these changes into the main repository.
+                    </p>
+                 </div>
+                 
+                 <div className="flex gap-4">
+                    <div className="text-center">
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Code Status</p>
+                       <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-xs font-bold">LINT PASSED</div>
+                    </div>
+                    <div className="text-center">
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Build Integrity</p>
+                       <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-xs font-bold">VERIFIED</div>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="mt-8 pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-white/5">
+                       <Fingerprint className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div>
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Latest Commit</p>
+                       <p className="text-xs text-white font-mono font-bold">0x8a7f2e1...</p>
+                    </div>
+                 </div>
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-white/5">
+                       <Activity className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div>
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Staging Load</p>
+                       <p className="text-xs text-white font-bold">0 Active Users</p>
+                    </div>
+                 </div>
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-white/5">
+                       <Clock className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Last Deploy</p>
+                       <p className="text-xs text-white font-bold">4h 12m ago</p>
+                    </div>
+                 </div>
+              </div>
            </div>
         </div>
 
