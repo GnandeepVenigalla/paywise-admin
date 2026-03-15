@@ -24,7 +24,11 @@ const StatBox = ({ title, value, icon: Icon, alertColor, subtitle }) => (
 );
 
 const Operations = () => {
-  const [loading, setLoading] = useState(false);
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const userRole = currentUser.adminRole || 'read_only';
+    const canDeploy = ['root', 'super_admin'].includes(userRole);
+
+    const [loading, setLoading] = useState(false);
   const [tickets, setTickets] = useState([
     { id: 'TIC-0982', user: 'jane_smith@paywiseapp.com', issue: 'KYC Document Rejected', status: 'waiting', urgency: 'high', time: '12m ago' },
     { id: 'TIC-0985', user: 'bob_martin@test.com', issue: 'Account Frozen Appeal', status: 'waiting', urgency: 'critical', time: '45m ago' },
@@ -107,9 +111,9 @@ const Operations = () => {
 
       if (action === 'Generate Beta Link') {
         const res = await axios.post('/api/admin/release/beta-link', {}, { headers });
-        setMessage(`BETA LINK GENERATED: ${res.data.url}`);
-        // Copy to clipboard or open in new tab
-        window.prompt("Share this Beta link with testers:", res.data.url);
+        setMessage(`BETA LINK GENERATED. Opening environment...`);
+        // Open the beta link in a new tab
+        window.open(res.data.url, '_blank');
       } else if (action === 'Push to Git') {
         const res = await axios.post('/api/admin/release/deploy', {}, { headers });
         setMessage(res.data.msg);
@@ -302,12 +306,17 @@ const Operations = () => {
                  >
                     <Settings className="w-3 h-3" /> Get Beta Link
                  </button>
-                 <button 
-                   onClick={() => handleAction('System', 'Push to Git')} 
-                   className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                 >
-                    <TrendingUp className="w-3 h-3" /> Push to Production
-                 </button>
+                  <button 
+                    onClick={() => handleAction('System', 'Push to Git')} 
+                    disabled={!canDeploy}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                        canDeploy 
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
+                        : 'bg-slate-800 border border-white/5 text-slate-500 cursor-not-allowed opacity-50'
+                    }`}
+                  >
+                     <TrendingUp className="w-3 h-3" /> Push to Production
+                  </button>
               </div>
            </div>
            
