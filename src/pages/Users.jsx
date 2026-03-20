@@ -42,7 +42,6 @@ const Users = () => {
       newSet.add(userId);
       if (userRole === 'super_admin') {
          console.warn(`[AUDIT] PII Reveal triggered by Super Admin ${currentUser.email} for Entity ${userId}`);
-         alert(`SECURITY LOG: PII unmasking incident reported to Root Administrator.`);
       }
     } else {
       newSet.delete(userId);
@@ -86,7 +85,7 @@ const Users = () => {
     } catch (err) {
       console.error("Error fetching directory data:", err);
       if (err.response?.status === 403) {
-         setMessage({ type: 'error', text: 'Access Denied to this sector.' });
+         setMessage({ type: 'error', text: 'Access Denied.' });
       }
     } finally {
       setLoading(false);
@@ -169,21 +168,21 @@ const Users = () => {
 
   const handleAction = async (userId, action) => {
     if (!canManageUsers && action !== 'flag') return;
-    if (!window.confirm(`Are you sure you want to ${action} this node? This action is absolute.`)) return;
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
     
     setActionLoading(userId);
     try {
       const token = localStorage.getItem('token');
       if (action === 'purge') {
         await axios.delete(`/api/admin/users/${userId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        setMessage({ type: 'success', text: 'Node permanently purged from kernel.' });
+        setMessage({ type: 'success', text: 'User permanently deleted.' });
       } else {
         await axios.post(`/api/admin/users/${userId}/action`, { action }, { headers: { 'Authorization': `Bearer ${token}` } });
-        if (action === 'freeze') setMessage({ type: 'warning', text: 'Node access protocols frozen.' });
-        else if (action === 'unfreeze') setMessage({ type: 'success', text: 'Node access protocols restored.' });
-        else if (action === 'verify') setMessage({ type: 'success', text: 'Node identity successfully verified.' });
-        else if (action === 'flag') setMessage({ type: 'warning', text: 'Node flagged for review.' });
-        else setMessage({ type: 'warning', text: 'Node access protocols revoked.' });
+        if (action === 'freeze') setMessage({ type: 'warning', text: 'User access frozen.' });
+        else if (action === 'unfreeze') setMessage({ type: 'success', text: 'User access restored.' });
+        else if (action === 'verify') setMessage({ type: 'success', text: 'Identity successfully verified.' });
+        else if (action === 'flag') setMessage({ type: 'warning', text: 'User flagged for review.' });
+        else setMessage({ type: 'warning', text: 'User access revoked.' });
       }
       fetchData();
     } catch (err) {
@@ -212,84 +211,81 @@ const Users = () => {
   };
 
   if (loading && users.length === 0) return (
-    <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-      <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
-      <p className="text-indigo-400 font-black uppercase tracking-[0.3em] text-[10px]">Filtering Identity Grids...</p>
+    <div className="flex items-center justify-center h-[60vh]">
+      <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
     </div>
   );
 
   return (
-    <div className="space-y-10 pb-20 max-w-[1600px] mx-auto animate-in fade-in duration-700">
+    <div className="space-y-6 pb-20 max-w-[1600px] mx-auto animate-in fade-in duration-500">
       {/* Notifications */}
       {message && (
-        <div className={`fixed bottom-10 right-10 z-[120] p-5 rounded-3xl border shadow-2xl animate-in slide-in-from-right-10 flex items-center gap-4 ${
-          message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 
-          message.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+        <div className={`fixed bottom-10 right-10 z-[120] p-4 rounded-xl border flex items-center gap-3 shadow-lg ${
+          message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 
+          message.type === 'error' ? 'bg-rose-500/10 border-rose-500/30 text-rose-500' : 'bg-amber-500/10 border-amber-500/30 text-amber-500'
         }`}>
-          <div className={`p-2 rounded-xl bg-white/5`}>
-            {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
-          </div>
-          <span className="font-bold text-sm tracking-tight">{message.text}</span>
+          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
+          <span className="font-medium text-sm">{message.text}</span>
         </div>
       )}
 
       {/* Add Employee Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onClick={() => setShowAddModal(false)}></div>
-           <div className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 duration-300">
-              <div className="flex justify-between items-start mb-8">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 text-white">
+           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddModal(false)}></div>
+           <div className="relative w-full max-w-lg bg-[#1e232b] border border-[#2d323b] rounded-2xl p-6 shadow-xl animate-in zoom-in-95">
+              <div className="flex justify-between items-start mb-6">
                  <div>
-                    <h2 className="text-3xl font-black text-white tracking-tighter flex items-center gap-3">
-                       <UserPlus className="w-8 h-8 text-indigo-500" /> Authorized Personnel
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                       <UserPlus className="w-5 h-5 text-indigo-500" /> Authorized Personnel
                     </h2>
-                    <p className="text-slate-500 text-sm font-medium mt-1">Grant administrative access to internal nodes.</p>
+                    <p className="text-slate-400 text-sm mt-1">Grant administrative access to internal team members.</p>
                  </div>
-                 <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
-                    <X className="w-6 h-6 text-slate-500" />
+                 <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-[#2d323b] rounded-lg transition-colors">
+                    <X className="w-5 h-5 text-slate-400" />
                  </button>
               </div>
 
-              <form onSubmit={handleAddEmployee} className="space-y-6">
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Organization Email</label>
+              <form onSubmit={handleAddEmployee} className="space-y-5">
+                 <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-300">Organization Email</label>
                     <input 
                        type="email" 
                        required
                        placeholder="employee@paywiseapp.com"
                        value={newEmployee.email}
                        onChange={(e) => setNewEmployee({...newEmployee, email: e.target.value})}
-                       className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all"
+                       className="w-full px-4 py-2.5 bg-[#171a21] border border-[#2d323b] rounded-lg text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
                     />
                  </div>
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Alias / Username</label>
+                 <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-300">Username</label>
                     <input 
                        type="text" 
-                       placeholder="Security alias"
+                       placeholder="E.g. jdoe"
                        value={newEmployee.username}
                        onChange={(e) => setNewEmployee({...newEmployee, username: e.target.value})}
-                       className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all"
+                       className="w-full px-4 py-2.5 bg-[#171a21] border border-[#2d323b] rounded-lg text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
                     />
                  </div>
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Assigned Clearance Tier</label>
+                 <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-300">Access Role</label>
                     <select 
                        value={newEmployee.role}
                        onChange={(e) => setNewEmployee({...newEmployee, role: e.target.value})}
-                       className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all appearance-none"
+                       className="w-full px-4 py-2.5 bg-[#171a21] border border-[#2d323b] rounded-lg text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors appearance-none"
                     >
-                       {isRoot && <option value="super_admin">Super Admin (All sectors, no data edit)</option>}
-                       <option value="admin">Admin (Stats & Users, no personnel list)</option>
-                       <option value="moderator">Moderator (Stats & Report Download)</option>
-                       <option value="read_only">Read Only (System Observation)</option>
+                       {isRoot && <option value="super_admin">Super Admin</option>}
+                       <option value="admin">Admin</option>
+                       <option value="moderator">Moderator</option>
+                       <option value="read_only">Read Only</option>
                     </select>
                  </div>
 
                  <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 disabled:opacity-50"
+                  className="w-full py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors mt-2 disabled:opacity-50"
                  >
                     {isSubmitting ? 'Syncing...' : 'Authorize Personnel'}
                  </button>
@@ -299,259 +295,193 @@ const Users = () => {
       )}
 
       {/* Header & Tabs */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div className="w-full">
-          <div className="flex items-center gap-2 mb-3">
-             {isRoot ? (
-               <div className="bg-amber-500/10 text-amber-500 text-[10px] font-black px-4 py-1.5 rounded-full border border-amber-500/20 uppercase tracking-widest flex items-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
-                 <Crown className="w-3.5 h-3.5" /> Root Access Active
-               </div>
-             ) : (
-               <div className="bg-indigo-500/10 text-indigo-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-indigo-500/20 uppercase tracking-widest flex items-center gap-2">
-                 <Shield className="w-3.5 h-3.5" /> Tier: {getRoleLabel(userRole)}
-               </div>
-             )}
-          </div>
-          <h1 className="text-5xl font-black text-white tracking-tighter">Identity <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-500">Directory</span></h1>
-          
-          <div className="flex gap-4 mt-8 bg-white/[0.02] border border-white/5 p-1 rounded-2xl w-fit">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white mb-2">User Directory</h1>
+          <div className="flex gap-4 border-b border-[#2d323b]">
             <button 
               onClick={() => setActiveTab('users')}
-              className={`py-3 px-8 text-xs font-black uppercase tracking-widest transition-all rounded-xl ${activeTab === 'users' ? 'bg-white text-slate-950 shadow-xl' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+              className={`pb-3 px-1 text-sm font-medium transition-colors border-b-2 ${activeTab === 'users' ? 'text-indigo-400 border-indigo-400' : 'text-slate-400 border-transparent hover:text-slate-300'}`}
             >
               Users ({users.length})
             </button>
             {canSeeCouncil && (
               <button 
                 onClick={() => setActiveTab('council')}
-                className={`py-3 px-8 text-xs font-black uppercase tracking-widest transition-all rounded-xl ${activeTab === 'council' ? 'bg-white text-slate-950 shadow-xl' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+                className={`pb-3 px-1 text-sm font-medium transition-colors border-b-2 ${activeTab === 'council' ? 'text-indigo-400 border-indigo-400' : 'text-slate-400 border-transparent hover:text-slate-300'}`}
               >
-                Council ({staff.length})
+                Team ({staff.length})
               </button>
             )}
           </div>
         </div>
         
-        <div className="flex gap-4 w-full md:w-auto mb-1">
-          <div className="relative flex-1 md:w-80 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+        <div className="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
+          <div className="relative flex-1 md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input 
               type="text" 
               placeholder={`Search ${activeTab}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all placeholder:text-slate-700 shadow-inner"
+              className="w-full pl-9 pr-4 py-2 bg-[#1e232b] border border-[#2d323b] rounded-lg text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
             />
           </div>
           {canModifyCouncil && activeTab === 'council' && (
              <button 
                onClick={() => setShowAddModal(true)}
-               className="p-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20 active:scale-95 flex items-center gap-2 px-6"
+               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 text-sm font-medium"
              >
-               <Plus className="w-5 h-5" />
-               <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block">Add Personnel</span>
+               <Plus className="w-4 h-4" />
+               <span className="hidden sm:inline">Add Member</span>
              </button>
           )}
           <button 
             onClick={fetchData}
-            className="p-4 bg-white/5 border border-white/5 rounded-2xl text-slate-400 hover:text-white transition-all group"
+            className="p-2 bg-[#1e232b] border border-[#2d323b] rounded-lg text-slate-400 hover:text-white transition-colors"
           >
-            <RefreshCw className={`w-5 h-5 ${loading && 'animate-spin'}`} />
+            <RefreshCw className={`w-4 h-4 ${loading && 'animate-spin'}`} />
           </button>
         </div>
       </div>
 
       {/* Table Section */}
-      <div className={`glass-card !p-0 overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] ${!isRoot ? 'no-screenshot' : ''}`}>
+      <div className={`bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden ${!isRoot ? 'no-screenshot' : ''}`}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-white/5 bg-white/[0.03]">
-                <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Profile Alias</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Communication</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{activeTab === 'council' ? 'Access Control' : 'Join Sequence'}</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Protocol Status</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">Operations</th>
+          <table className="w-full text-left">
+            <thead className="bg-[#171a21]/50 border-b border-[#2d323b]">
+              <tr>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">User</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Contact</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">{activeTab === 'council' ? 'Role' : 'Joined'}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.03]">
+            <tbody className="divide-y divide-[#2d323b]">
               {filteredData.map((user) => (
                 <tr 
                   key={user._id} 
                   onClick={() => activeTab === 'users' && setSelectedUser(user)}
-                  className={`group transition-all duration-300 ${activeTab === 'users' ? 'cursor-pointer hover:bg-white/[0.04]' : 'hover:bg-white/[0.015]'}`}
+                  className={`group transition-colors ${activeTab === 'users' ? 'cursor-pointer hover:bg-[#171a21]/50' : 'hover:bg-[#171a21]/50'}`}
                 >
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-14 h-14 rounded-3xl border flex items-center justify-center font-black text-xl transition-all duration-500 group-hover:scale-105 ${
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
                         user.adminRole === 'root' 
-                          ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.1)]' 
-                          : user.adminRole ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-400' : 'bg-white/[0.03] border-white/10 text-slate-400'
+                          ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
+                          : user.adminRole ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-[#2d323b] text-slate-300'
                       }`}>
                         {user.username?.substring(0, 1).toUpperCase() || 'U'}
                       </div>
                       <div>
-                        <div className="flex items-center gap-2">
-                           <p className="text-xl font-black text-white tracking-tight">{user.username}</p>
-                           {user.adminRole === 'root' && <Crown className="w-4 h-4 text-amber-500 animate-pulse" />}
-                           {activeTab === 'council' && user.adminRole !== 'root' && <Terminal className="w-3.5 h-3.5 text-slate-600" />}
+                        <div className="flex items-center gap-1.5">
+                           <p className="text-sm font-semibold text-white">{user.username}</p>
+                           {user.adminRole === 'root' && <Crown className="w-3.5 h-3.5 text-amber-500" />}
+                           {activeTab === 'council' && user.adminRole !== 'root' && <Shield className="w-3.5 h-3.5 text-indigo-400" />}
                         </div>
-                        <p 
-                          className={`text-[10px] text-slate-600 font-black uppercase tracking-widest mt-0.5 ${canSeePII ? 'cursor-pointer hover:text-indigo-400 transition-colors' : ''}`}
-                          onClick={canSeePII ? (e) => toggleReveal(user._id, e) : undefined}
-                        >
-                          UID: {getPIIDisplay(user._id, 'uid', user._id)}
-                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">UID: {getPIIDisplay(user._id, 'uid', user._id)}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-6">
-                    <div className="space-y-1.5">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="space-y-1">
                       <div 
-                        className={`flex items-center gap-2 text-sm text-slate-400 font-bold group-hover:text-white transition-colors ${canSeePII ? 'cursor-pointer hover:text-indigo-400' : ''}`}
+                        className={`flex items-center gap-2 text-sm text-slate-300 ${canSeePII ? 'cursor-pointer hover:text-indigo-400 transition-colors' : ''}`}
                         onClick={canSeePII ? (e) => toggleReveal(user._id, e) : undefined}
                       >
-                        <Mail className="w-3.5 h-3.5 text-indigo-500/40" />
+                        <Mail className="w-3.5 h-3.5 text-slate-500" />
                         {getPIIDisplay(user.email, 'email', user._id)}
-                        {canSeePII && !isRoot && !revealedUsers.has(user._id) && <Eye className="w-3 h-3 ml-1 opacity-50" />}
                       </div>
                       <div 
-                        className={`flex items-center gap-2 text-xs text-slate-600 font-medium ${canSeePII && user.phone ? 'cursor-pointer hover:text-indigo-400 transition-colors' : ''}`}
+                        className={`flex items-center gap-2 text-xs text-slate-500 ${canSeePII && user.phone ? 'cursor-pointer hover:text-indigo-400 transition-colors' : ''}`}
                         onClick={canSeePII && user.phone ? (e) => toggleReveal(user._id, e) : undefined}
                       >
-                        <Phone className="w-3.5 h-3.5 text-slate-800" />
-                        {getPIIDisplay(user.phone || 'COMMS_UNLINKED', 'phone', user._id)}
-                        {canSeePII && !isRoot && !revealedUsers.has(user._id) && user.phone && <Eye className="w-3 h-3 ml-1 opacity-50" />}
+                        <Phone className="w-3.5 h-3.5 text-slate-600" />
+                        {getPIIDisplay(user.phone || 'N/A', 'phone', user._id)}
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-6">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {activeTab === 'council' ? (
-                       <div className="flex items-center gap-3">
+                       <div className="flex items-center gap-2">
                            {canModifyCouncil && user.email !== currentUser.email && (isRoot || (user.adminRole !== 'root' && user.adminRole !== 'super_admin')) ? (
-                            <>
-                              <div className="relative">
-                                <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-indigo-400/50 z-10" />
+                            <div className="flex items-center gap-2">
                                 <select 
                                   value={editingRole[user._id] || user.adminRole}
                                   onChange={(e) => setEditingRole({...editingRole, [user._id]: e.target.value})}
-                                  className="pl-8 bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-[10px] font-black text-indigo-400 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer"
+                                  className="bg-[#171a21] border border-[#2d323b] rounded-lg py-1 px-2 text-xs text-indigo-400 focus:outline-none focus:border-indigo-500 transition-colors"
                                 >
-                                  {isRoot && <option value="super_admin">SUPER ADMIN</option>}
-                                  <option value="admin">ADMIN</option>
-                                  <option value="moderator">MODERATOR</option>
-                                  <option value="read_only">READ ONLY</option>
+                                  {isRoot && <option value="super_admin">Super Admin</option>}
+                                  <option value="admin">Admin</option>
+                                  <option value="moderator">Moderator</option>
+                                  <option value="read_only">Read Only</option>
                                 </select>
-                              </div>
                               {editingRole[user._id] && editingRole[user._id] !== user.adminRole && (
                                 <button 
                                   onClick={() => handleUpdateRole(user)}
                                   disabled={actionLoading === user._id}
-                                  className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-all animate-pulse"
+                                  className="p-1.5 bg-emerald-500/10 text-emerald-500 rounded-md hover:bg-emerald-500 hover:text-white transition-colors"
                                 >
                                   {actionLoading === user._id ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                                 </button>
                               )}
-                            </>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <Shield className="w-4 h-4 text-indigo-500/50" />
-                              <span className="text-indigo-400 uppercase tracking-widest text-[10px] font-black">{getRoleLabel(user.adminRole)}</span>
                             </div>
+                          ) : (
+                            getRoleLabel(user.adminRole)
                           )}
                        </div>
                     ) : (
-                      <div className="flex items-center gap-2 text-sm text-slate-500 font-bold">
-                         <Calendar className="w-4 h-4 text-slate-800" />
-                         {new Date(user.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </div>
+                      new Date(user.createdAt).toLocaleDateString()
                     )}
                   </td>
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col gap-1.5 w-fit">
-                       {user.isVerified && (
-                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 transparent-blur rounded-md border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 w-fit">
-                             <ShieldCheck className="w-3 h-3" />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Verified</span>
-                          </div>
-                       )}
-                       {!user.isVerified && (
-                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 transparent-blur rounded-md border bg-rose-500/10 text-rose-400 border-rose-500/20 w-fit">
-                             <AlertTriangle className="w-3 h-3" />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Flagged</span>
-                          </div>
-                       )}
-                       {(!user.lastActive || new Date().getTime() - new Date(user.lastActive).getTime() > 7 * 24 * 60 * 60 * 1000) && (
-                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 transparent-blur rounded-md border bg-slate-500/10 text-slate-400 border-slate-500/20 w-fit">
-                             <Clock className="w-3 h-3" />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Inactive</span>
-                          </div>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-col gap-1 w-fit">
+                       {user.isVerified ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 text-xs font-medium">
+                             <CheckCircle2 className="w-3 h-3" /> Active
+                          </span>
+                       ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-500 text-xs font-medium">
+                             <AlertTriangle className="w-3 h-3" /> Flagged
+                          </span>
                        )}
                     </div>
                   </td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex justify-end gap-2 transition-all duration-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                    <div className="flex justify-end gap-2">
                       {canManageUsers && user.email !== currentUser.email ? (
                         <>
                           <button 
-                            onClick={(e) => { e.stopPropagation(); alert('Push Notification dispatch initialized for ' + user.email); }}
-                            disabled={actionLoading === user._id}
-                            className="p-2.5 bg-blue-500/5 border border-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white rounded-xl transition-all hover:scale-110 active:scale-95 disabled:opacity-50 group/btn relative" 
-                            title="Send Push Notification"
-                          >
-                            <Bell className="w-4 h-4" />
-                          </button>
-                          <button 
                             onClick={(e) => { e.stopPropagation(); handleAction(user._id, user.isVerified === false ? 'unfreeze' : 'freeze'); }}
                             disabled={actionLoading === user._id}
-                            className={`p-2.5 border rounded-xl transition-all hover:scale-110 active:scale-95 disabled:opacity-50 group/btn relative ${user.isVerified === false ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-500 hover:bg-emerald-500' : 'bg-cyan-500/5 border-cyan-500/10 text-cyan-500 hover:bg-cyan-500'} hover:text-white`} 
-                            title={user.isVerified === false ? 'Unfreeze Account' : 'Freeze Account'}
+                            className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-[#171a21] rounded-lg transition-colors border border-transparent hover:border-[#2d323b]"
+                            title={user.isVerified === false ? 'Unfreeze' : 'Freeze'}
                           >
                             <Snowflake className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={(e) => { e.stopPropagation(); handleAction(user._id, 'revoke'); }}
                             disabled={actionLoading === user._id}
-                            className="p-2.5 bg-amber-500/5 border border-amber-500/10 text-amber-500 hover:text-white hover:bg-amber-500 rounded-xl transition-all hover:scale-110 active:scale-95 disabled:opacity-50" 
-                            title="Revoke Node Access"
+                            className="p-1.5 text-slate-400 hover:text-amber-500 hover:bg-[#171a21] rounded-lg transition-colors border border-transparent hover:border-[#2d323b]"
+                            title="Ban User"
                           >
-                            {actionLoading === user._id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Ban className="w-4 h-4" />}
+                            <Ban className="w-4 h-4" />
                           </button>
                           {['root', 'super_admin'].includes(userRole) && (
                             <button 
                               onClick={(e) => { e.stopPropagation(); handleAction(user._id, 'purge'); }}
                               disabled={actionLoading === user._id}
-                              className="p-2.5 bg-rose-500/5 border border-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all hover:scale-110 active:scale-95 disabled:opacity-50 shadow-lg shadow-rose-500/0 hover:shadow-rose-500/20" 
-                              title="Execute Node Purge"
+                              className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-[#171a21] rounded-lg transition-colors border border-transparent hover:border-[#2d323b]"
+                              title="Delete User"
                             >
-                              {actionLoading === user._id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            </button>
-                          )}
-                          {isRoot && activeTab === 'council' && user.adminRole === 'super_admin' && (
-                            <button
-                               onClick={(e) => { e.stopPropagation(); alert(`Emergency Recovery Protocol initiated. Sent password reset link to ${user.email}`); }}
-                               className="p-2.5 bg-purple-500/5 border border-purple-500/10 text-purple-500 hover:text-white hover:bg-purple-500 rounded-xl transition-all hover:scale-110 active:scale-95"
-                               title="Emergency Recovery (Reset Credentials)"
-                            >
-                               <Database className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           )}
                         </>
-                      ) : isModerator && user.email !== currentUser.email ? (
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); handleAction(user._id, user.isVerified === false ? 'verify' : 'flag'); }}
-                            className={`p-2.5 border rounded-xl transition-all hover:scale-110 active:scale-95 group/btn relative ${user.isVerified === false ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-500 hover:bg-emerald-500' : 'bg-amber-500/5 border-amber-500/10 text-amber-500 hover:bg-amber-500'} hover:text-white`} 
-                            title={user.isVerified === false ? "Verify Node" : "Flag Node"}
-                          >
-                            {user.isVerified === false ? <CheckCircle2 className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />}
-                          </button>
                       ) : user.email === currentUser.email ? (
-                        <div className="px-6 py-2 bg-white/5 border border-white/5 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest">Active_Node</div>
-                      ) : (
-                        <div className="p-3.5 text-slate-800 opacity-20" title="Permission Level: Tier 0 Required">
-                          <ShieldAlert className="w-5 h-5" />
-                        </div>
-                      )}
+                        <span className="text-xs text-slate-500 bg-[#171a21] px-2 py-1 rounded-md border border-[#2d323b]">You</span>
+                      ) : null}
                     </div>
                   </td>
                 </tr>
@@ -560,194 +490,62 @@ const Users = () => {
           </table>
         </div>
         {(filteredData.length === 0 && !loading) && (
-          <div className="p-24 text-center space-y-6 animate-in zoom-in-95">
-             <div className="inline-flex p-8 bg-white/5 rounded-[40px] border border-white/10 text-slate-700 shadow-inner">
-               <UserX className="w-12 h-12" />
+          <div className="p-12 text-center text-slate-400">
+             <div className="flex justify-center mb-4">
+               <UserX className="w-10 h-10 text-slate-600" />
              </div>
-             <div>
-               <p className="text-white font-black uppercase tracking-[0.3em] text-sm">No Active Nodes</p>
-               <p className="text-slate-600 font-bold text-xs mt-2 uppercase tracking-widest">Sector {activeTab} is currently clear or unauthorized.</p>
-             </div>
+             <p className="text-sm font-medium">No users found.</p>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-6 bg-indigo-600/5 border border-indigo-500/10 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
-         <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-            <ShieldCheck className="w-32 h-32 text-indigo-500" />
-         </div>
-         <div className="p-4 bg-indigo-500/10 text-indigo-400 rounded-3xl border border-indigo-500/20 shadow-xl">
-            <ShieldCheck className="w-8 h-8" />
-         </div>
-         <div>
-            <h2 className="text-xl font-black text-white tracking-tight">Identity Verification Log</h2>
-            <p className="text-slate-500 text-sm font-medium mt-1">All personnel accesses are tracked and secured via neural cryptographic signatures.</p>
-         </div>
-      </div>
-
       {/* User Management Slide-over Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-[150] flex justify-end">
-          <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setSelectedUser(null)}></div>
-          <div className="relative w-full max-w-2xl bg-slate-900 border-l border-white/10 h-full overflow-y-auto animate-in slide-in-from-right duration-500 shadow-2xl shadow-indigo-900/20 flex flex-col">
-
+        <div className="fixed inset-0 z-[150] flex justify-end text-white">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedUser(null)}></div>
+          <div className="relative w-full max-w-md bg-[#1e232b] h-full overflow-y-auto animate-in slide-in-from-right duration-300 shadow-2xl flex flex-col border-l border-[#2d323b]">
             {/* Header */}
-            <div className="sticky top-0 bg-slate-900/90 backdrop-blur-xl border-b border-white/10 p-8 z-10 flex justify-between items-start">
-              <div className="flex items-center gap-5">
-                <div className={`w-16 h-16 rounded-3xl border flex items-center justify-center font-black text-2xl shadow-xl ${
-                  selectedUser.isVerified
-                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                    : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+            <div className="sticky top-0 bg-[#1e232b] border-b border-[#2d323b] p-6 z-10 flex justify-between items-start">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                  selectedUser.isVerified ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-500' : 'bg-rose-500/10 border border-rose-500/20 text-rose-500'
                 }`}>
                   {selectedUser.username?.substring(0, 1).toUpperCase() || 'U'}
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black text-white tracking-tighter flex items-center gap-3">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
                     {selectedUser.username}
-                    {selectedUser.isVerified && <CheckCircle2 className="w-6 h-6 text-emerald-500" />}
                   </h2>
-                  <p 
-                    className={`text-slate-500 text-sm font-bold tracking-widest uppercase mt-1 flex items-center gap-2 ${canSeePII ? 'cursor-pointer hover:text-indigo-400 transition-colors' : ''}`}
-                    onClick={canSeePII ? (e) => toggleReveal(selectedUser._id, e) : undefined}
-                  >
-                    <Database className="w-4 h-4" /> UID: {getPIIDisplay(selectedUser._id, 'uid', selectedUser._id)}
-                  </p>
+                  <p className="text-slate-400 text-xs mt-1">UID: {getPIIDisplay(selectedUser._id, 'uid', selectedUser._id)}</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedUser(null)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-all group">
-                <X className="w-6 h-6 text-slate-400 group-hover:text-white" />
+              <button onClick={() => setSelectedUser(null)} className="p-1.5 bg-[#171a21] border border-[#2d323b] hover:bg-[#2d323b] rounded-lg transition-colors">
+                <X className="w-5 h-5 text-slate-400" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="p-8 space-y-8 flex-1">
-
-              {/* Financial & Activity Overview */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl group hover:border-indigo-500/30 transition-all">
-                  <Activity className="w-5 h-5 text-indigo-400 mb-4" />
-                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Financial State</p>
-                  <p className="text-sm font-black text-slate-500 uppercase tracking-widest mt-3">Data Hidden</p>
-                </div>
-                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl group hover:border-emerald-500/30 transition-all">
-                  <CreditCard className="w-5 h-5 text-emerald-400 mb-4" />
-                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Total Transactions</p>
-                  <p className="text-sm font-black text-slate-500 uppercase tracking-widest mt-3">N/A</p>
-                </div>
-              </div>
-
-              {/* Data Rows */}
-              <div className="space-y-3">
-                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Identity Telemetry</h3>
-
-                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <Mail className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm font-bold text-slate-300">Email Address</span>
-                    </div>
-                    <div 
-                      className={`text-sm font-black text-white ${canSeePII ? 'cursor-pointer hover:text-indigo-400 transition-colors flex items-center gap-2' : ''}`}
-                      onClick={canSeePII ? (e) => toggleReveal(selectedUser._id, e) : undefined}
-                    >
-                      {getPIIDisplay(selectedUser.email, 'email', selectedUser._id)}
-                      {canSeePII && !isRoot && !revealedUsers.has(selectedUser._id) && <Eye className="w-4 h-4 opacity-50" />}
-                    </div>
-                 </div>
-
-                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <Phone className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm font-bold text-slate-300">Phone Number</span>
-                    </div>
-                    <div 
-                      className={`text-sm font-black text-white ${canSeePII && selectedUser.phone ? 'cursor-pointer hover:text-indigo-400 transition-colors flex items-center gap-2' : ''}`}
-                      onClick={canSeePII && selectedUser.phone ? (e) => toggleReveal(selectedUser._id, e) : undefined}
-                    >
-                      {getPIIDisplay(selectedUser.phone || 'COMMS_UNLINKED', 'phone', selectedUser._id)}
-                      {canSeePII && !isRoot && !revealedUsers.has(selectedUser._id) && selectedUser.phone && <Eye className="w-4 h-4 opacity-50" />}
-                    </div>
-                 </div>
-
-                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm font-bold text-slate-300">Registration Date</span>
-                    </div>
-                    <span className="text-sm font-black text-white">{new Date(selectedUser.createdAt).toLocaleDateString()}</span>
-                 </div>
-
-                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm font-bold text-slate-300">Primary Region</span>
-                    </div>
-                    <span className="text-sm font-black text-white">Global (Default)</span>
-                 </div>
-              </div>
-
-              {/* Quick Actions Matrix */}
+            <div className="p-6 space-y-6 flex-1">
+              <h3 className="text-sm font-semibold text-white border-b border-[#2d323b] pb-2">User Details</h3>
+              
               <div className="space-y-4">
-                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 mt-6">Administrative Overrides</h3>
-                 <div className="grid grid-cols-2 gap-4">
-                    {canManageUsers && (
-                      <button className="flex items-center justify-between p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl hover:bg-blue-500/20 transition-all group">
-                         <div className="flex items-center gap-3 text-blue-400">
-                           <Bell className="w-4 h-4" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">Push Alert</span>
-                         </div>
-                         <ChevronRight className="w-4 h-4 text-blue-500/50 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                      </button>
-                    )}
-
-                    {(canManageUsers || isModerator) && (
-                      <button className="flex items-center justify-between p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl hover:bg-emerald-500/20 transition-all group">
-                         <div className="flex items-center gap-3 text-emerald-400">
-                           <Receipt className="w-4 h-4" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">View Activity</span>
-                         </div>
-                         <ChevronRight className="w-4 h-4 text-emerald-500/50 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
-                      </button>
-                    )}
-
-                    {(canManageUsers || isModerator) && (
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleAction(selectedUser._id, selectedUser.isVerified === false ? 'verify' : 'flag'); }}
-                        className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${selectedUser.isVerified === false ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20 text-amber-400'}`}
-                      >
-                         <div className="flex items-center gap-3">
-                           {selectedUser.isVerified === false ? <CheckCircle2 className="w-4 h-4" /> : <Fingerprint className="w-4 h-4" />}
-                           <span className="text-[10px] font-black uppercase tracking-widest">{selectedUser.isVerified === false ? 'Verify Node' : 'Flag Node'}</span>
-                         </div>
-                         <ChevronRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-all" />
-                      </button>
-                    )}
-
-                    {canManageUsers && (
-                      <button 
-                         onClick={(e) => { e.stopPropagation(); handleAction(selectedUser._id, selectedUser.isVerified === false ? 'unfreeze' : 'freeze'); }}
-                         className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${selectedUser.isVerified === false ? 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 hover:bg-rose-500/20 text-rose-400'}`}
-                      >
-                         <div className="flex items-center gap-3">
-                           <Snowflake className="w-4 h-4" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">{selectedUser.isVerified === false ? 'Unfreeze Node' : 'Freeze Node'}</span>
-                         </div>
-                         <ChevronRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-all" />
-                      </button>
-                    )}
-                    
-                    {!canManageUsers && !isModerator && (
-                      <div className="col-span-2 p-4 text-center bg-white/5 rounded-2xl border border-white/5">
-                        <span className="text-xs font-black uppercase tracking-widest text-slate-500">Tier Clearance Too Low For Admin Execution</span>
-                      </div>
-                    )}
+                 <div className="flex justify-between items-center bg-[#171a21] p-3 rounded-lg border border-[#2d323b]">
+                   <span className="text-sm text-slate-400 flex items-center gap-2"><Mail className="w-4 h-4"/> Email Status</span>
+                   <span className="text-sm font-medium text-white">{getPIIDisplay(selectedUser.email, 'email', selectedUser._id)}</span>
+                 </div>
+                 <div className="flex justify-between items-center bg-[#171a21] p-3 rounded-lg border border-[#2d323b]">
+                   <span className="text-sm text-slate-400 flex items-center gap-2"><Phone className="w-4 h-4"/> Phone Status</span>
+                   <span className="text-sm font-medium text-white">{getPIIDisplay(selectedUser.phone || 'N/A', 'phone', selectedUser._id)}</span>
+                 </div>
+                 <div className="flex justify-between items-center bg-[#171a21] p-3 rounded-lg border border-[#2d323b]">
+                   <span className="text-sm text-slate-400 flex items-center gap-2"><Calendar className="w-4 h-4"/> Joined</span>
+                   <span className="text-sm font-medium text-white">{new Date(selectedUser.createdAt).toLocaleDateString()}</span>
                  </div>
               </div>
-
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

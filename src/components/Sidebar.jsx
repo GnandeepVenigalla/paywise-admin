@@ -7,7 +7,6 @@ import {
   Settings as SettingsIcon,
   ChevronLeft,
   LogOut,
-  Shield,
   TrendingUp,
   Activity
 } from 'lucide-react';
@@ -18,11 +17,11 @@ const Sidebar = ({ isOpen, toggle }) => {
 
   const allNavItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/', roles: ['root', 'super_admin', 'admin', 'moderator', 'read_only'] },
-    { icon: UsersIcon, label: 'Identity', path: '/users', roles: ['root', 'super_admin', 'admin', 'moderator', 'read_only'] },
+    { icon: UsersIcon, label: 'Users & Identity', path: '/users', roles: ['root', 'super_admin', 'admin', 'moderator', 'read_only'] },
     { icon: BarChart3, label: 'Analytics', path: '/stats', roles: ['root', 'super_admin', 'admin', 'read_only'] },
     { icon: TrendingUp, label: 'Growth', path: '/growth', roles: ['root', 'super_admin', 'admin', 'read_only'] },
     { icon: Activity, label: 'Operations', path: '/operations', roles: ['root', 'super_admin', 'admin', 'moderator'] },
-    { icon: SettingsIcon, label: 'Core Config', path: '/settings', roles: ['root', 'super_admin'] },
+    { icon: SettingsIcon, label: 'Settings', path: '/settings', roles: ['root', 'super_admin'] },
   ];
 
   const filteredNavItems = allNavItems.filter(item => item.roles.includes(userRole));
@@ -34,52 +33,52 @@ const Sidebar = ({ isOpen, toggle }) => {
 
   const getRoleLabel = (role) => {
     const roles = {
-      root: 'ROOT',
-      super_admin: 'SUP-ADMIN',
-      admin: 'ADMIN',
-      moderator: 'MOD',
-      read_only: 'READ'
+      root: 'Root Access',
+      super_admin: 'Super Admin',
+      admin: 'Administrator',
+      moderator: 'Moderator',
+      read_only: 'Read Only'
     };
     return roles[role] || role;
   };
 
   return (
     <aside 
-      className={`bg-slate-950 border-r border-white/5 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col z-50 absolute inset-y-0 left-0 lg:relative ${
-        isOpen ? 'translate-x-0 w-72' : '-translate-x-full w-72 lg:translate-x-0 lg:w-24'
+      className={`bg-[#1e232b] border-r border-[#2d323b] transition-all duration-300 ease-in-out flex flex-col z-50 absolute inset-y-0 left-0 lg:relative ${
+        isOpen ? 'translate-x-0 w-[260px]' : '-translate-x-full w-[260px] lg:translate-x-0 lg:w-[88px]'
       }`}
     >
-      <div className={`h-24 flex items-center border-b border-white/5 ${isOpen ? 'px-8 justify-start' : 'justify-center'}`}>
-        <div className={`flex items-center gap-4 overflow-hidden group ${!isOpen && 'justify-center'}`}>
-          <img src="/logo.png" alt="Paywise" className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-2xl object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-indigo-500/20" />
+      <div className={`h-20 flex items-center border-b border-[#2d323b] ${isOpen ? 'px-6 justify-start' : 'justify-center'}`}>
+        <div className={`flex items-center gap-3 overflow-hidden ${!isOpen && 'justify-center'}`}>
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg flex-shrink-0">
+            P
+          </div>
           {isOpen && (
-            <div className="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500">
-              <span className="font-black text-white text-xl tracking-tighter">PAYWISE</span>
-              <div className="flex items-center gap-1.5">
-                 <Shield className="w-3 h-3 text-indigo-500" />
-                 <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em]">{getRoleLabel(userRole)} ACCESS</span>
-              </div>
+            <div className="flex flex-col animate-in fade-in duration-300">
+              <span className="font-bold text-white text-lg tracking-tight">Paywise Admin</span>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-widest">{getRoleLabel(userRole)}</span>
             </div>
           )}
         </div>
       </div>
 
-      <nav className="flex-1 py-10 px-4 space-y-2">
+      <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto custom-scrollbar">
         {filteredNavItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) => `
-              nav-link group relative
+              flex items-center gap-3 px-3 py-3 rounded-xl transition-colors relative group
               ${isActive 
-                ? 'bg-white/10 text-white shadow-xl border border-white/10' 
-                : 'text-slate-500 hover:text-white hover:bg-white/5'}
+                ? 'bg-blue-500/10 text-blue-500 font-semibold' 
+                : 'text-slate-400 font-medium hover:text-white hover:bg-[#2d323b]'
+              }
             `}
           >
-            <item.icon className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${isOpen ? '' : 'mx-auto'}`} />
-            {isOpen && <span className="font-bold text-sm tracking-tight">{item.label}</span>}
+            <item.icon className={`w-5 h-5 flex-shrink-0 ${!isOpen && 'mx-auto'}`} />
+            {isOpen && <span className="text-sm">{item.label}</span>}
             {!isOpen && (
-               <div className="absolute left-20 bg-indigo-600 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold z-[60]">
+               <div className="absolute left-[calc(100%+12px)] bg-[#1e232b] border border-[#2d323b] text-white text-sm px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[60] shadow-lg">
                  {item.label}
                </div>
             )}
@@ -87,20 +86,20 @@ const Sidebar = ({ isOpen, toggle }) => {
         ))}
       </nav>
 
-      <div className="p-6 space-y-4">
+      <div className="p-4 border-t border-[#2d323b] space-y-2">
         <button 
           onClick={handleLogout}
-          className={`flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-rose-500 hover:bg-rose-500/10 transition-all font-bold text-sm ${!isOpen && 'justify-center'}`}
+          className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl text-slate-400 hover:bg-rose-500/10 hover:text-rose-500 transition-colors font-medium text-sm group ${!isOpen && 'justify-center'}`}
         >
-          <LogOut className="w-5 h-5" />
-          {isOpen && <span>Terminate Session</span>}
+          <LogOut className="w-5 h-5 flex-shrink-0" />
+          {isOpen && <span>Sign Out</span>}
         </button>
 
         <button 
           onClick={toggle}
-          className={`w-full flex items-center justify-center p-3 hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-white/5 group ${!isOpen && 'hidden lg:flex'}`}
+          className={`w-full flex items-center justify-center p-3 hover:bg-[#2d323b] text-slate-400 hover:text-white rounded-xl transition-colors ${!isOpen && 'hidden lg:flex'}`}
         >
-          <ChevronLeft className={`w-5 h-5 text-slate-500 transition-transform duration-500 group-hover:text-white ${!isOpen && 'rotate-180'}`} />
+          <ChevronLeft className={`w-5 h-5 transition-transform duration-300 ${!isOpen && 'rotate-180'}`} />
         </button>
       </div>
     </aside>

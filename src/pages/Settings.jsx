@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Save, Bell, Shield, Database, Globe, Mail, HardDrive, Lock, ShieldCheck, Zap, Rocket, History } from 'lucide-react';
+import { Save, Shield, HardDrive, Zap, Rocket, History, AlertTriangle } from 'lucide-react';
 
 const SettingToggle = ({ title, description, enabled, onChange }) => (
-  <div className="flex items-center justify-between py-6 group">
+  <div className="flex items-center justify-between py-5 group border-b border-[#2d323b] last:border-0">
     <div>
-      <p className="text-sm font-black text-white tracking-tight">{title}</p>
-      <p className="text-xs text-slate-500 font-medium mt-1">{description}</p>
+      <p className="text-sm font-semibold text-white">{title}</p>
+      <p className="text-xs text-slate-400 mt-1">{description}</p>
     </div>
     <button 
       onClick={onChange}
-      className={`w-14 h-8 rounded-full relative transition-all duration-300 ${enabled ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]' : 'bg-white/10'}`}
+      className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${enabled ? 'bg-indigo-600' : 'bg-[#2d323b]'}`}
     >
-      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all duration-300 shadow-lg ${enabled ? 'right-1' : 'left-1'}`}></div>
+      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ${enabled ? 'translate-x-7' : 'translate-x-1'}`}></div>
     </button>
   </div>
 );
@@ -22,41 +22,46 @@ const Settings = () => {
 
   const [toggles, setToggles] = useState({
     tfa: true,
-    ipWhite: false,
     maintenance: false,
-    aiSecurity: true,
     shadowMode: true,
-    expFee: false,
-    betaAds: false
+    expFee: false
   });
 
+  const [message, setMessage] = useState('');
+
   const auditLogs = [
-    { id: 1, time: '10:42 AM', admin: 'System Admin (Node 01)', action: 'Unfroze User #10' },
-    { id: 2, time: '09:14 AM', admin: 'Sarah J. (Moderator)', action: 'Batch Dismissed 4 ALR-882 Alerts' },
-    { id: 3, time: 'Yesterday', admin: 'Root System', action: 'Toggled Shadow Mode ON' },
-    { id: 4, time: 'Yesterday', admin: 'System Admin (Node 01)', action: 'Updated Log Buffer Capacity to 256GB' }
+    { id: 1, time: '10:42 AM', admin: 'System Admin', action: 'Modified System Settings' },
+    { id: 2, time: 'Yesterday', admin: 'Root', action: 'Toggled Maintenance Mode OFF' },
   ];
 
+  const handleApply = () => {
+     setMessage('Settings successfully updated.');
+     setTimeout(() => setMessage(''), 3000);
+  };
+
   return (
-    <div className="max-w-5xl space-y-10 pb-20 animate-in fade-in duration-700 mx-auto">
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full border border-emerald-500/20 uppercase tracking-widest">Environment Variables</span>
-        </div>
-        <h1 className="text-5xl font-black text-white tracking-tighter">Core <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-500">Config</span></h1>
-        <p className="text-slate-500 mt-2 font-medium">Fine-tuning the Paywise kernel and global security parameters.</p>
+    <div className="max-w-5xl space-y-6 pb-20 animate-in fade-in duration-500 mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
+         <div>
+            <h1 className="text-2xl font-bold text-white mb-2">Platform Settings</h1>
+            <p className="text-slate-400 text-sm">Configure core backend toggles and flags.</p>
+         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div className="space-y-10">
-          <section className="glass-card !p-8">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20">
-                <Shield className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-white tracking-tight">Access Control</h2>
+      {message && (
+        <div className="bg-emerald-600/10 border border-emerald-500/30 px-6 py-4 rounded-xl flex items-center text-emerald-500 font-medium shadow-sm animate-in fade-in">
+          <span className="text-sm">{message}</span>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
+          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+              <Shield className="w-5 h-5 text-indigo-500" />
+              <h2 className="text-lg font-semibold text-white">Access Control</h2>
             </div>
-            <div className="divide-y divide-white/[0.03]">
+            <div className="p-6">
               <SettingToggle 
                 title="Strict Domain Validation" 
                 description="Enforce @paywiseapp.com for all management nodes" 
@@ -64,121 +69,87 @@ const Settings = () => {
                 onChange={() => {}}
               />
               <SettingToggle 
-                title="Zero-Knowledge OTP" 
-                description="Passwordless authentication flow for admin clusters" 
-                enabled={true} 
-                onChange={() => {}}
-              />
-              <SettingToggle 
-                title="Neural Perimeter Defense" 
-                description="AI-driven threat detection on administrative endpoints" 
-                enabled={toggles.aiSecurity} 
-                onChange={() => setToggles({...toggles, aiSecurity: !toggles.aiSecurity})}
+                title="Developer Mode" 
+                description="Expose extra telemetry across the application" 
+                enabled={toggles.tfa} 
+                onChange={() => setToggles({...toggles, tfa: !toggles.tfa})}
               />
             </div>
           </section>
 
-          <section className="glass-card !p-8">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-rose-500/10 text-rose-400 rounded-2xl border border-rose-500/20">
-                <HardDrive className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-white tracking-tight">Internal Storage</h2>
+          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+              <HardDrive className="w-5 h-5 text-emerald-500" />
+              <h2 className="text-lg font-semibold text-white">System Storage</h2>
             </div>
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Log Buffer Capacity (GB)</label>
-                <input 
-                  type="number" 
-                  defaultValue={256} 
-                  className="w-full px-5 py-4 bg-white/5 border border-white/5 rounded-2xl text-white font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all shadow-inner" 
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Retention Interval (Cycles)</label>
-                <select className="w-full px-5 py-4 bg-white/5 border border-white/5 rounded-2xl text-white font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all shadow-inner appearance-none">
-                   <option>90 Epochs</option>
-                   <option>180 Epochs</option>
-                   <option>Infinite Trace</option>
+            <div className="p-6 space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Log Capacity Limit</label>
+                <select className="w-full px-4 py-2.5 bg-[#171a21] border border-[#2d323b] rounded-lg text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors appearance-none">
+                   <option>Standard (30 Days)</option>
+                   <option>Extended (90 Days)</option>
                 </select>
               </div>
             </div>
           </section>
         </div>
 
-        <div className="space-y-10">
-          <section className="glass-card !p-8">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-violet-500/10 text-violet-400 rounded-2xl border border-violet-500/20">
-                <Zap className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-white tracking-tight">System Status</h2>
+        <div className="space-y-6">
+          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+              <Zap className="w-5 h-5 text-amber-500" />
+              <h2 className="text-lg font-semibold text-white">System Status</h2>
             </div>
-            <div className="space-y-6">
-               <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-4">
-                  <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
-                     <span className="text-slate-500">Database Uptime</span>
-                     <span className="text-emerald-400">100.00%</span>
+            <div className="p-6 space-y-6">
+               <div className="bg-[#171a21] border border-[#2d323b] rounded-xl p-4">
+                  <div className="flex justify-between items-center text-sm font-medium mb-3">
+                     <span className="text-slate-400">Database Uptime</span>
+                     <span className="text-emerald-500">100.00%</span>
                   </div>
-                  <div className="flex gap-1 h-8">
+                  <div className="flex gap-1 h-6">
                      {[...Array(24)].map((_, i) => (
-                        <div key={i} className="flex-1 bg-emerald-500/20 border border-emerald-500/10 rounded-sm animate-in fade-in zoom-in" style={{animationDelay: `${i * 20}ms`}}></div>
+                        <div key={i} className="flex-1 bg-emerald-500/20 border border-emerald-500/10 rounded-sm"></div>
                      ))}
                   </div>
                </div>
                
-               <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
-                  <SettingToggle 
-                    title="Broadcasting Mode" 
-                    description="Display global alerts on client dashboards" 
-                    enabled={toggles.maintenance} 
-                    onChange={() => setToggles({...toggles, maintenance: !toggles.maintenance})}
-                  />
-               </div>
+               <SettingToggle 
+                 title="Maintenance Mode" 
+                 description="Display maintenance banner on client apps" 
+                 enabled={toggles.maintenance} 
+                 onChange={() => setToggles({...toggles, maintenance: !toggles.maintenance})}
+               />
             </div>
           </section>
 
-          <section className="glass-card !p-8">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-fuchsia-500/10 text-fuchsia-400 rounded-2xl border border-fuchsia-500/20">
-                <Rocket className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-black text-white tracking-tight">Feature Flags</h2>
+          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+              <Rocket className="w-5 h-5 text-fuchsia-500" />
+              <h2 className="text-lg font-semibold text-white">Feature Flags</h2>
             </div>
-            <div className="divide-y divide-white/[0.03]">
+            <div className="p-6">
               <SettingToggle 
-                title="Shadow Mode" 
-                description="Toggle 'ON' to deploy new tests to 5% of users without redeploying." 
+                title="Shadow Deployment" 
+                description="Deploy A/B tests to a 5% sample cohort" 
                 enabled={toggles.shadowMode} 
                 onChange={() => setToggles({...toggles, shadowMode: !toggles.shadowMode})}
               />
               <SettingToggle 
-                title="Experimental Transaction Fee" 
-                description="Test new transaction fee logic on limited user cohorts." 
+                title="Experimental Fees" 
+                description="Test new fee algorithms" 
                 enabled={toggles.expFee} 
                 onChange={() => setToggles({...toggles, expFee: !toggles.expFee})}
-              />
-              <SettingToggle 
-                title="Beta Ad Network" 
-                description="Route fractional traffic to alternative ad providers." 
-                enabled={toggles.betaAds} 
-                onChange={() => setToggles({...toggles, betaAds: !toggles.betaAds})}
               />
             </div>
           </section>
 
-          <div className="p-8 bg-gradient-to-br from-indigo-500/5 to-violet-500/5 border border-white/10 rounded-[2.5rem] flex items-center justify-between">
-             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white flex items-center justify-center rounded-2xl shadow-xl">
-                   <Save className="w-6 h-6 text-slate-950" />
-                </div>
-                <div>
-                   <p className="text-white font-black tracking-tight">Ready to commit?</p>
-                   <p className="text-xs text-slate-500 font-medium">Changes propagate instantly across node clusters.</p>
-                </div>
+          <div className="bg-[#1e232b] border border-indigo-500/30 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+             <div>
+                <p className="text-white font-semibold text-sm">Unsaved Changes</p>
+                <p className="text-sm text-slate-400">Review config before applying.</p>
              </div>
-             <button className="px-8 py-4 bg-white text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all shadow-xl active:scale-95">
-                Apply Logic
+             <button onClick={handleApply} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">
+                Apply Settings
              </button>
           </div>
         </div>
@@ -186,24 +157,22 @@ const Settings = () => {
       
       {/* Root Access Controls */}
       {isRoot && (
-        <section className="glass-card !p-0 overflow-hidden mt-10 border-rose-500/20 shadow-[0_0_30px_rgba(243,24,103,0.1)]">
-          <div className="p-8 border-b border-rose-500/10 flex items-center gap-4 bg-rose-500/5">
-            <div className="p-3 bg-rose-500/20 text-rose-500 rounded-2xl border border-rose-500/30">
-              <Zap className="w-6 h-6 animate-pulse" />
-            </div>
+        <section className="bg-rose-950/20 border border-rose-500/30 rounded-2xl shadow-sm overflow-hidden mt-6">
+          <div className="p-6 border-b border-rose-500/20 flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-500" />
             <div>
-              <h2 className="text-xl font-black text-rose-400 tracking-tight">Root Authority: The Kill Switch</h2>
-              <p className="text-[10px] text-rose-500/70 font-bold uppercase tracking-widest mt-1">Total system shutdown. Data wipe. Administrative wipe. Proceed with absolute caution.</p>
+              <h2 className="text-lg font-semibold text-rose-500">Danger Zone</h2>
+              <p className="text-sm text-rose-500/70">Irreversible administrative actions.</p>
             </div>
           </div>
-          <div className="p-8 bg-rose-950/20 flex items-center justify-between">
+          <div className="p-6 flex items-center justify-between">
             <div>
-               <p className="text-sm font-black text-rose-100 uppercase tracking-widest">Execute Total Kernel Wipe</p>
-               <p className="text-xs text-rose-400/50 font-medium mt-1">This will permanently destroy the dashboard linkage and wipe the primary datastores.</p>
+               <p className="text-sm font-semibold text-white">Execute Full Database Wipe</p>
+               <p className="text-sm text-slate-400 mt-1">This will permanently destroy all records.</p>
             </div>
             <button 
-               onClick={() => { if(window.confirm('CRITICAL WARNING: This will permanently wipe the entire Paywise backend and dashboard. Types "CONFIRM" to proceed.') && prompt('Type CONFIRM')==='CONFIRM') alert('Database Wipe Initiated. Kernel shutting down...'); }}
-               className="px-8 py-4 bg-rose-600 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(225,29,72,0.4)] hover:bg-rose-500 active:scale-95 border border-rose-400"
+               onClick={() => { if(window.confirm('CRITICAL WARNING: This will permanently wipe the entire backend. Type "CONFIRM" to proceed.') && prompt('Type CONFIRM')==='CONFIRM') alert('Database Wipe Initiated.'); }}
+               className="px-6 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium hover:bg-rose-700 transition-colors"
             >
                Wipe Database
             </button>
@@ -213,34 +182,26 @@ const Settings = () => {
 
       {/* Admin Audit Trail */}
       {isRoot && (
-      <section className="glass-card !p-0 overflow-hidden mt-10">
-        <div className="p-8 border-b border-white/5 flex items-center gap-4 bg-amber-950/10">
-          <div className="p-3 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/20">
-            <History className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-xl font-black text-amber-100 tracking-tight">Admin Audit Trail</h2>
-            <p className="text-[10px] text-amber-400/70 font-bold uppercase tracking-widest mt-1">Immutable log of system modifications and administrative actions.</p>
-          </div>
+      <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden mt-6">
+        <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+          <History className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-semibold text-white">System Audit Log</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-white/5 bg-black/20">
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Time</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Admin Name</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Action Executed</th>
+          <table className="w-full text-left">
+            <thead className="bg-[#1e232b] border-b border-[#2d323b]">
+              <tr>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Admin</th>
+                <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Action Executed</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 bg-amber-950/5">
+            <tbody className="divide-y divide-[#2d323b] bg-[#1e232b]">
                {auditLogs.map(log => (
-                  <tr key={log.id} className="hover:bg-amber-500/10 transition-colors group">
-                     <td className="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">{log.time}</td>
-                     <td className="px-8 py-5 text-xs font-bold text-white flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"></div>
-                        {log.admin}
-                     </td>
-                     <td className="px-8 py-5 text-xs font-medium text-slate-300 group-hover:text-amber-100 transition-colors">{log.action}</td>
+                  <tr key={log.id} className="hover:bg-[#171a21]/50 transition-colors">
+                     <td className="px-6 py-4 text-sm text-slate-400 whitespace-nowrap">{log.time}</td>
+                     <td className="px-6 py-4 text-sm font-medium text-slate-200">{log.admin}</td>
+                     <td className="px-6 py-4 text-sm text-slate-300">{log.action}</td>
                   </tr>
                ))}
             </tbody>
