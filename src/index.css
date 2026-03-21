@@ -2,11 +2,108 @@
 
 :root {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Shared Defaults */
+  --primary-color: #3b82f6; /* Blue default */
 }
+
+/* Color Scheme: Light */
+[data-theme='light'] {
+  --bg-body: #f8fafc;
+  --bg-surface-card: #ffffff;
+  --bg-surface-section: #f1f5f9;
+  --bg-surface-hover: #f1f5f9;
+  --border-surface: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+}
+
+/* Color Scheme: Dim */
+[data-theme='dim'] {
+  --bg-body: #1e293b;
+  --bg-surface-card: #273444;
+  --bg-surface-section: #334155;
+  --bg-surface-hover: #334155;
+  --border-surface: #3b4252;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+}
+
+/* Color Scheme: Dark */
+[data-theme='dark'] {
+  --bg-body: #0f111a;
+  --bg-surface-card: #1e232b;
+  --bg-surface-section: #171a21;
+  --bg-surface-hover: #2d323b;
+  --border-surface: #2d323b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+}
+
+/* Primary Colors */
+[data-primary='blue'] { --primary-color: #3b82f6; }
+[data-primary='emerald'] { --primary-color: #10b981; }
+[data-primary='violet'] { --primary-color: #8b5cf6; }
+[data-primary='teal'] { --primary-color: #14b8a6; }
+[data-primary='cyan'] { --primary-color: #06b6d4; }
+[data-primary='orange'] { --primary-color: #f97316; }
+[data-primary='amber'] { --primary-color: #f59e0b; }
+[data-primary='pink'] { --primary-color: #ec4899; }
 
 body {
   font-family: var(--font-sans);
-  @apply bg-[#0f111a] text-slate-200 antialiased selection:bg-blue-500/30;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Input Style Functionality */
+[data-input-style='filled'] input:not([type='radio']):not([type='checkbox']),
+[data-input-style='filled'] select {
+  background-color: var(--bg-surface-hover) !important;
+  border-color: transparent !important;
+}
+
+[data-input-style='outlined'] input:not([type='radio']):not([type='checkbox']),
+[data-input-style='outlined'] select {
+  background-color: transparent !important;
+  border-color: var(--border-surface) !important;
+}
+
+/* Menu Theme Functionality */
+[data-menu-theme='primaryColor'] aside {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+[data-menu-theme='primaryColor'] aside a {
+  color: rgba(255,255,255,0.8) !important;
+}
+[data-menu-theme='primaryColor'] aside a.bg-\[var\(--primary-color\)\]\/10 {
+  background-color: rgba(0,0,0,0.2) !important;
+  color: white !important;
+}
+
+[data-menu-theme='transparent'] aside {
+  background-color: transparent !important;
+  border-right: none !important;
+}
+
+/* Menu Type Functionality */
+[data-menu-type='overlay'] aside {
+  position: absolute;
+  height: 100%;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+@layer utilities {
+  .bg-surface-body { background-color: var(--bg-body); }
+  .bg-surface-card { background-color: var(--bg-surface-card); }
+  .bg-surface-section { background-color: var(--bg-surface-section); }
+  .bg-surface-hover { background-color: var(--bg-surface-hover); }
+  .border-surface-border { border-color: var(--border-surface); }
+  .text-color { color: var(--text-primary); }
+  .text-color-secondary { color: var(--text-secondary); }
 }
 
 /* Custom Scrollbar */

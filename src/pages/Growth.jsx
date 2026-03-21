@@ -8,11 +8,11 @@ import {
 } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, iconColor, iconBg, subtitle }) => (
-  <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl p-6 shadow-sm">
+  <div className="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
     <div className="flex justify-between items-start mb-4">
       <div>
-        <h3 className="text-slate-400 font-medium text-sm mb-2">{title}</h3>
-        <p className="text-2xl font-bold text-white mb-1">{value}</p>
+        <h3 className="text-color-secondary font-medium text-sm mb-2">{title}</h3>
+        <p className="text-2xl font-bold text-color mb-1">{value}</p>
         {subtitle && <span className="text-slate-500 text-sm">{subtitle}</span>}
       </div>
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBg} ${iconColor}`}>
@@ -25,8 +25,8 @@ const StatCard = ({ title, value, icon: Icon, iconColor, iconBg, subtitle }) => 
 const ProgressBar = ({ label, value, max, colorClass, suffix = '' }) => (
   <div className="mb-3 last:mb-0">
     <div className="flex justify-between text-sm mb-1.5">
-      <span className="font-medium text-slate-400">{label}</span>
-      <span className="font-semibold text-white">{value}{suffix}</span>
+      <span className="font-medium text-color-secondary">{label}</span>
+      <span className="font-semibold text-color">{value}{suffix}</span>
     </div>
     <div className="w-full h-1.5 bg-[#2d323b] rounded-full overflow-hidden">
       <div className={`h-full ${colorClass}`} style={{ width: `${(value/max)*100}%` }}></div>
@@ -59,7 +59,7 @@ const Growth = () => {
 
   if (loading && !data) return (
     <div className="flex items-center justify-center h-[60vh]">
-      <div className="w-8 h-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="w-8 h-8 border-4 border-[var(--primary-color)]/20 border-t-indigo-500 rounded-full animate-spin"></div>
     </div>
   );
 
@@ -70,13 +70,13 @@ const Growth = () => {
     <div className="space-y-6 pb-20 max-w-[1600px] mx-auto animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Growth & Revenue</h1>
-          <p className="text-slate-400 text-sm">Monetization tracking and acquisition funnel.</p>
+          <h1 className="text-2xl font-bold text-color mb-2">Growth & Revenue</h1>
+          <p className="text-color-secondary text-sm">Monetization tracking and acquisition funnel.</p>
         </div>
       </div>
 
       <div className="space-y-4">
-         <h2 className="text-lg font-semibold text-white flex items-center gap-2"><DollarSign className="w-5 h-5 text-emerald-500"/> Ad Performance Overview</h2>
+         <h2 className="text-lg font-semibold text-color flex items-center gap-2"><DollarSign className="w-5 h-5 text-emerald-500"/> Ad Performance Overview</h2>
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            <StatCard 
              title="Total Net Yield" 
@@ -98,7 +98,7 @@ const Growth = () => {
              title="Ad Clicks" 
              value={(ad.clicks || 0).toLocaleString()} 
              icon={Activity} 
-             iconColor="text-indigo-500" 
+             iconColor="text-[var(--primary-color)]" 
              iconBg="bg-indigo-500/10"
              subtitle={`${ad.ctr || 0}% CTR`} 
            />
@@ -114,12 +114,12 @@ const Growth = () => {
       </div>
 
       <div className="space-y-4 mt-8">
-         <h2 className="text-lg font-semibold text-white flex items-center gap-2"><Users className="w-5 h-5 text-indigo-500"/> User Insights</h2>
+         <h2 className="text-lg font-semibold text-color flex items-center gap-2"><Users className="w-5 h-5 text-[var(--primary-color)]"/> User Insights</h2>
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl p-6 shadow-sm">
+           <div className="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
              <div className="flex items-center gap-3 mb-6">
                 <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                <h3 className="text-lg font-semibold text-white">Verification Funnel</h3>
+                <h3 className="text-lg font-semibold text-color">Verification Funnel</h3>
              </div>
              <div>
                 <ProgressBar label="Registered Users" value={sum.totalUsers || 0} max={sum.totalUsers || 1} colorClass="bg-indigo-500" />
@@ -128,22 +128,22 @@ const Growth = () => {
              </div>
            </div>
 
-           <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl p-6 shadow-sm">
+           <div className="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
              <div className="flex items-center gap-3 mb-6">
-                <Activity className="w-5 h-5 text-indigo-500" />
-                <h3 className="text-lg font-semibold text-white">Retention (DAU/MAU)</h3>
+                <Activity className="w-5 h-5 text-[var(--primary-color)]" />
+                <h3 className="text-lg font-semibold text-color">Retention (DAU/MAU)</h3>
              </div>
              <div className="flex items-end gap-6 mb-6">
                 <div>
-                   <p className="text-sm font-medium text-slate-400 mb-1">DAU (Today)</p>
-                   <p className="text-2xl font-bold text-white">{sum.dau || 0}</p>
+                   <p className="text-sm font-medium text-color-secondary mb-1">DAU (Today)</p>
+                   <p className="text-2xl font-bold text-color">{sum.dau || 0}</p>
                 </div>
                 <div>
-                   <p className="text-sm font-medium text-slate-400 mb-1">MAU (30d)</p>
-                   <p className="text-2xl font-bold text-white">{sum.mau || 0}</p>
+                   <p className="text-sm font-medium text-color-secondary mb-1">MAU (30d)</p>
+                   <p className="text-2xl font-bold text-color">{sum.mau || 0}</p>
                 </div>
                 <div className="ml-auto text-right">
-                   <p className="text-sm font-medium text-slate-400 mb-1">Stickiness</p>
+                   <p className="text-sm font-medium text-color-secondary mb-1">Stickiness</p>
                    <p className="text-2xl font-bold text-emerald-400">{sum.mau ? Math.round(((sum.dau || 0) / sum.mau) * 100) : 0}%</p>
                 </div>
              </div>

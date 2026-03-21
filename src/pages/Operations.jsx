@@ -6,11 +6,11 @@ import {
 } from 'lucide-react';
 
 const StatCard = ({ title, value, icon: Icon, iconColor, iconBg, subtitle }) => (
-  <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl p-6 shadow-sm hover:border-[#3d424b] transition-colors">
+  <div className="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm hover:border-[#3d424b] transition-colors">
     <div className="flex justify-between items-start mb-4">
       <div>
-        <h3 className="text-slate-400 font-medium text-sm mb-2">{title}</h3>
-        <p className="text-2xl font-bold text-white mb-1">{value}</p>
+        <h3 className="text-color-secondary font-medium text-sm mb-2">{title}</h3>
+        <p className="text-2xl font-bold text-color mb-1">{value}</p>
         {subtitle && <span className="text-slate-500 text-sm">{subtitle}</span>}
       </div>
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBg} ${iconColor}`}>
@@ -109,8 +109,8 @@ const Operations = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Operations Hub</h1>
-            <p className="text-slate-400 text-sm">Reviewing manual exceptions, security alerts, and system pipelines.</p>
+            <h1 className="text-2xl font-bold text-color mb-2">Operations Hub</h1>
+            <p className="text-color-secondary text-sm">Reviewing manual exceptions, security alerts, and system pipelines.</p>
          </div>
       </div>
 
@@ -152,9 +152,9 @@ const Operations = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Support Tickets */}
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
-           <div className="p-6 border-b border-[#2d323b] flex justify-between items-center bg-[#171a21]/50">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2"><LifeBuoy className="w-5 h-5 text-blue-500"/> Support Tickets</h2>
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
+           <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-section/50">
+              <h2 className="text-lg font-semibold text-color flex items-center gap-2"><LifeBuoy className="w-5 h-5 text-blue-500"/> Support Tickets</h2>
            </div>
            <div className="flex-1 min-h-[250px] flex items-center justify-center p-8 text-center text-slate-500">
              {tickets.length > 0 ? (
@@ -169,9 +169,9 @@ const Operations = () => {
         </div>
 
         {/* High Risk Alerts */}
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
-           <div className="p-6 border-b border-[#2d323b] flex justify-between items-center bg-[#171a21]/50">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-rose-500"/> High-Risk Alerts</h2>
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
+           <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-section/50">
+              <h2 className="text-lg font-semibold text-color flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-rose-500"/> High-Risk Alerts</h2>
            </div>
            <div className="flex-1 min-h-[250px] flex items-center justify-center p-8 text-center text-slate-500">
              {alerts.length > 0 ? (
@@ -186,28 +186,28 @@ const Operations = () => {
         </div>
 
         {/* Manual Overrides */}
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden flex flex-col lg:col-span-2">
-           <div className="p-6 border-b border-[#2d323b] flex justify-between items-center bg-[#171a21]/50">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2"><UserCheck className="w-5 h-5 text-amber-500"/> Manual KYC Overrides</h2>
-              <span className="text-xs font-medium bg-[#171a21] text-amber-500 px-3 py-1 rounded-lg border border-[#2d323b]">Tier 0 Clearance Required</span>
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden flex flex-col lg:col-span-2">
+           <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-section/50">
+              <h2 className="text-lg font-semibold text-color flex items-center gap-2"><UserCheck className="w-5 h-5 text-amber-500"/> Manual KYC Overrides</h2>
+              <span className="text-xs font-medium bg-surface-section text-amber-500 px-3 py-1 rounded-lg border border-surface-border">Tier 0 Clearance Required</span>
            </div>
            <div className="overflow-x-auto min-h-[150px]">
               <table className="w-full text-left border-collapse">
                  <thead>
-                    <tr className="bg-[#171a21]">
-                       <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Target Node</th>
-                       <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Reason</th>
-                       <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider text-center">Confidence</th>
-                       <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider text-right">Action</th>
+                    <tr className="bg-surface-section">
+                       <th className="px-6 py-4 text-xs font-medium text-color-secondary uppercase tracking-wider">Target Node</th>
+                       <th className="px-6 py-4 text-xs font-medium text-color-secondary uppercase tracking-wider">Reason</th>
+                       <th className="px-6 py-4 text-xs font-medium text-color-secondary uppercase tracking-wider text-center">Confidence</th>
+                       <th className="px-6 py-4 text-xs font-medium text-color-secondary uppercase tracking-wider text-right">Action</th>
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-[#2d323b]">
                     {kycQueue.length > 0 ? (
                       kycQueue.map(item => (
-                        <tr key={item.id} className="hover:bg-[#171a21] transition-colors">
-                           <td className="px-6 py-4 text-sm font-semibold text-white">{item.user}</td>
-                           <td className="px-6 py-4 text-sm text-slate-400">{item.status}</td>
-                           <td className="px-6 py-4 text-sm text-center text-slate-400">{item.confidence}</td>
+                        <tr key={item.id} className="hover:bg-surface-section transition-colors">
+                           <td className="px-6 py-4 text-sm font-semibold text-color">{item.user}</td>
+                           <td className="px-6 py-4 text-sm text-color-secondary">{item.status}</td>
+                           <td className="px-6 py-4 text-sm text-center text-color-secondary">{item.confidence}</td>
                            <td className="px-6 py-4 text-right">
                               <button className="text-blue-500 hover:text-blue-400 transition-colors text-sm font-medium">Review</button>
                            </td>
@@ -224,16 +224,16 @@ const Operations = () => {
         </div>
 
         {/* Beta Release Management */}
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden flex flex-col h-full lg:col-span-2 mt-2">
-           <div className="p-6 border-b border-[#2d323b] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#171a21]/50">
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden flex flex-col h-full lg:col-span-2 mt-2">
+           <div className="p-6 border-b border-surface-border flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-section/50">
               <div>
-                 <h2 className="text-lg font-semibold text-white flex items-center gap-2"><Zap className="w-5 h-5 text-indigo-500"/> Application Release Console</h2>
-                 <p className="text-xs text-slate-400 font-medium mt-1">Manage staging links and report active system bugs.</p>
+                 <h2 className="text-lg font-semibold text-color flex items-center gap-2"><Zap className="w-5 h-5 text-[var(--primary-color)]"/> Application Release Console</h2>
+                 <p className="text-xs text-color-secondary font-medium mt-1">Manage staging links and report active system bugs.</p>
               </div>
               <div className="flex gap-3">
                  <button 
                    onClick={() => handleAction('System', 'Generate Beta Link')} 
-                   className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400 text-sm font-medium hover:bg-indigo-500 hover:text-white transition-colors"
+                   className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-[var(--primary-color)]/20 rounded-lg text-[var(--primary-color)] text-sm font-medium hover:bg-indigo-500 hover:text-color transition-colors"
                  >
                     <Settings className="w-4 h-4" /> Get Beta Link
                  </button>
@@ -242,8 +242,8 @@ const Operations = () => {
                     disabled={!canDeploy}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         canDeploy 
-                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white' 
-                        : 'bg-slate-800 border-[#2d323b] text-slate-500 cursor-not-allowed opacity-50'
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-color' 
+                        : 'bg-slate-800 border-surface-border text-slate-500 cursor-not-allowed opacity-50'
                     }`}
                   >
                      <TrendingUp className="w-4 h-4" /> Push Deploy
@@ -252,20 +252,20 @@ const Operations = () => {
            </div>
            
            <div className="p-6">
-              <div className="flex flex-col md:flex-row gap-6 items-center justify-between border-b border-[#2d323b] pb-6">
+              <div className="flex flex-col md:flex-row gap-6 items-center justify-between border-b border-surface-border pb-6">
                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-2">v2.4.0 <span className="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-lg border border-indigo-500/20 ml-2 font-medium">Staging</span></h3>
-                    <p className="text-sm text-slate-400 leading-relaxed max-w-xl">
+                    <h3 className="text-lg font-bold text-color mb-2">v2.4.0 <span className="text-xs bg-indigo-500/20 text-[var(--primary-color)] px-2 py-0.5 rounded-lg border border-[var(--primary-color)]/20 ml-2 font-medium">Staging</span></h3>
+                    <p className="text-sm text-color-secondary leading-relaxed max-w-xl">
                        This environment tracks unresolved bugs directly connected to your Paywise Backend. Use the interface below to log new issues or mark existing bugs as resolved.
                     </p>
                  </div>
                  
                  <div className="flex gap-4">
-                    <div className="text-center p-4 bg-[#171a21] rounded-xl border border-[#2d323b]">
+                    <div className="text-center p-4 bg-surface-section rounded-xl border border-surface-border">
                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Status</p>
                        <span className="text-emerald-500 text-sm font-bold">Passing</span>
                     </div>
-                    <div className="text-center p-4 bg-[#171a21] rounded-xl border border-[#2d323b]">
+                    <div className="text-center p-4 bg-surface-section rounded-xl border border-surface-border">
                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1">Build</p>
                        <span className="text-emerald-500 text-sm font-bold">Stable</span>
                     </div>
@@ -274,7 +274,7 @@ const Operations = () => {
 
               {/* Bug Reporting Session */}
               <div className="mt-6">
-                 <h4 className="text-sm font-semibold text-white mb-4">Bug Reports & System Logs</h4>
+                 <h4 className="text-sm font-semibold text-color mb-4">Bug Reports & System Logs</h4>
                  
                  <div className="flex gap-3 mb-6">
                     <input 
@@ -282,12 +282,12 @@ const Operations = () => {
                       value={newBug}
                       onChange={(e) => setNewBug(e.target.value)}
                       placeholder="Describe the bug or issue observed..."
-                      className="flex-1 bg-[#171a21] border border-[#2d323b] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                      className="flex-1 bg-surface-section border border-surface-border rounded-lg px-4 py-2.5 text-sm text-color focus:outline-none focus:border-blue-500 transition-colors"
                     />
                     <button 
                       onClick={submitBug}
                       disabled={reportingBug || !newBug.trim()}
-                      className="px-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
+                      className="px-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-color text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
                     >
                        {reportingBug ? <Activity className="w-4 h-4 animate-spin" /> : <FileWarning className="w-4 h-4" />}
                        Save Log
@@ -298,7 +298,7 @@ const Operations = () => {
                     {bugs.length > 0 ? (
                       bugs.map(bug => (
                         <div key={bug._id} className={`p-4 rounded-xl border flex items-center justify-between transition-colors ${
-                          bug.status === 'resolved' ? 'bg-[#171a21] border-[#2d323b] opacity-60' : 'bg-[#1e232b] border-[#2d323b] hover:border-[#3d424b]'
+                          bug.status === 'resolved' ? 'bg-surface-section border-surface-border opacity-60' : 'bg-surface-card border-surface-border hover:border-[#3d424b]'
                         }`}>
                            <div className="flex items-center gap-4">
                               <div className={`w-2 h-2 rounded-full ${bug.status === 'resolved' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
@@ -314,7 +314,7 @@ const Operations = () => {
                            {bug.status !== 'resolved' && (
                              <button 
                                onClick={() => resolveBug(bug._id)}
-                               className="p-2 hover:bg-emerald-500/10 hover:text-emerald-500 text-slate-400 rounded-lg transition-colors"
+                               className="p-2 hover:bg-emerald-500/10 hover:text-emerald-500 text-color-secondary rounded-lg transition-colors"
                              >
                                 <CheckCircle className="w-5 h-5" />
                              </button>
@@ -322,7 +322,7 @@ const Operations = () => {
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-10 bg-[#171a21] border border-dashed border-[#2d323b] rounded-xl">
+                      <div className="text-center py-10 bg-surface-section border border-dashed border-surface-border rounded-xl">
                          <p className="text-sm text-slate-500 font-medium">No bugs reported yet in this cycle</p>
                       </div>
                     )}

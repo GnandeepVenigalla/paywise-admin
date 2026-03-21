@@ -52,7 +52,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6 relative overflow-hidden">
       {/* Background Decorative Gradient */}
       <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[var(--primary-color)]/10 blur-[120px] rounded-full"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-violet-600/10 blur-[120px] rounded-full"></div>
       </div>
 
@@ -61,10 +61,10 @@ const Login = () => {
           <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[32px] shadow-2xl shadow-indigo-500/20 mb-8 border border-white/10 p-5">
             <img src="/logo.png" alt="Paywise" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-4xl font-black text-white tracking-tighter sm:text-5xl">
-            PAYWISE<span className="text-indigo-500">.</span>
+          <h1 className="text-4xl font-black text-color tracking-tighter sm:text-5xl">
+            PAYWISE<span className="text-[var(--primary-color)]">.</span>
           </h1>
-          <p className="text-slate-400 mt-3 font-semibold uppercase tracking-[0.2em] text-xs">Admin Control Portal</p>
+          <p className="text-color-secondary mt-3 font-semibold uppercase tracking-[0.2em] text-xs">Admin Control Portal</p>
         </div>
 
         <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-10 rounded-[48px] shadow-2xl animate-in zoom-in-95 duration-500">
@@ -81,13 +81,13 @@ const Login = () => {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1">Organization Email</label>
                   <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-[var(--primary-color)] transition-colors" />
                     <input 
                       type="email" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@paywiseapp.com"
-                      className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-[24px] text-white placeholder:text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all font-semibold text-lg"
+                      className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-[24px] text-color placeholder:text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-[var(--primary-color)]/50 transition-all font-semibold text-lg"
                       required
                     />
                   </div>
@@ -99,11 +99,11 @@ const Login = () => {
             ) : (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="text-center space-y-2">
-                  <div className="inline-flex p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-indigo-400 mb-2">
+                  <div className="inline-flex p-3 bg-indigo-500/10 rounded-2xl border border-[var(--primary-color)]/20 text-[var(--primary-color)] mb-2">
                     <KeyRound className="w-6 h-6" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">Check your email</h3>
-                  <p className="text-sm text-slate-400">We've sent a 6-digit code to <br/><span className="text-indigo-300 font-bold">{email}</span></p>
+                  <h3 className="text-xl font-bold text-color">Check your email</h3>
+                  <p className="text-sm text-color-secondary">We've sent a 6-digit code to <br/><span className="text-indigo-300 font-bold">{email}</span></p>
                 </div>
 
                 <div className="space-y-2">
@@ -113,7 +113,7 @@ const Login = () => {
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="000 000"
-                    className="w-full px-6 py-6 bg-white/5 border border-white/10 rounded-[24px] text-white placeholder:text-slate-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all font-black text-4xl text-center tracking-[0.3em]"
+                    className="w-full px-6 py-6 bg-white/5 border border-white/10 rounded-[24px] text-color placeholder:text-slate-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-[var(--primary-color)]/50 transition-all font-black text-4xl text-center tracking-[0.3em]"
                     maxLength={6}
                     required
                   />
@@ -122,7 +122,7 @@ const Login = () => {
                 <button 
                   type="button"
                   onClick={() => setRequireOtp(false)}
-                  className="w-full flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-white transition-colors font-bold uppercase tracking-widest"
+                  className="w-full flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-color transition-colors font-bold uppercase tracking-widest"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Change Email
@@ -149,7 +149,7 @@ const Login = () => {
 
         <div className="mt-12 flex items-center justify-center gap-8 opacity-40 grayscale transition-all hover:opacity-100 hover:grayscale-0">
           <div className="h-px bg-white/10 flex-1"></div>
-          <p className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Internal System</p>
+          <p className="text-[10px] font-black text-color uppercase tracking-[0.3em]">Internal System</p>
           <div className="h-px bg-white/10 flex-1"></div>
         </div>
       </div>

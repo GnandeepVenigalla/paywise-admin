@@ -6,11 +6,11 @@ import {
 import { Download, Users, Zap, ShieldCheck, Activity, CreditCard, Group, Info } from 'lucide-react';
 
 const StatCard = ({ title, value, icon: Icon, iconColor, iconBg, subtitle }) => (
-  <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl p-6 shadow-sm">
+  <div className="bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
     <div className="flex justify-between items-start mb-4">
       <div>
-        <h3 className="text-slate-400 font-medium text-sm mb-2">{title}</h3>
-        <p className="text-2xl font-bold text-white mb-1">{value}</p>
+        <h3 className="text-color-secondary font-medium text-sm mb-2">{title}</h3>
+        <p className="text-2xl font-bold text-color mb-1">{value}</p>
         {subtitle && <span className="text-slate-500 text-sm">{subtitle}</span>}
       </div>
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBg} ${iconColor}`}>
@@ -54,7 +54,7 @@ const Stats = () => {
 
   if (loading && !data) return (
     <div className="flex items-center justify-center h-[60vh]">
-      <div className="w-8 h-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="w-8 h-8 border-4 border-[var(--primary-color)]/20 border-t-indigo-500 rounded-full animate-spin"></div>
     </div>
   );
 
@@ -64,15 +64,15 @@ const Stats = () => {
     <div className="space-y-6 pb-20 max-w-[1600px] mx-auto animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Analytics Data</h1>
-          <p className="text-slate-400 text-sm">Real-time metrics and system tracking.</p>
+          <h1 className="text-2xl font-bold text-color mb-2">Analytics Data</h1>
+          <p className="text-color-secondary text-sm">Real-time metrics and system tracking.</p>
         </div>
         
         <div className="flex gap-3">
           {canDownload ? (
             <button 
               onClick={handleDownload}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary-color)] hover:opacity-80 text-color rounded-lg text-sm font-medium transition-colors"
             >
               <Download className="w-4 h-4" />
               Export Data
@@ -80,7 +80,7 @@ const Stats = () => {
           ) : (
             <button 
               disabled
-              className="flex items-center gap-2 px-4 py-2 bg-slate-800 border-[#2d323b] text-slate-500 rounded-lg text-sm font-medium opacity-50 cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-800 border-surface-border text-slate-500 rounded-lg text-sm font-medium opacity-50 cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
               Export Data
@@ -90,7 +90,7 @@ const Stats = () => {
       </div>
 
       {userRole === 'read_only' && (
-         <div className="bg-indigo-600/10 border border-indigo-500/30 px-6 py-4 rounded-xl flex items-center gap-3 text-indigo-400 font-medium">
+         <div className="bg-[var(--primary-color)]/10 border border-[var(--primary-color)]/30 px-6 py-4 rounded-xl flex items-center gap-3 text-[var(--primary-color)] font-medium">
             <Info className="w-5 h-5" />
             <span className="text-sm">Read Only mode active. Export restricted.</span>
          </div>
@@ -109,7 +109,7 @@ const Stats = () => {
            title="Platform Groups" 
            value={summary?.totalGroups || 0} 
            icon={Users} 
-           iconColor="text-indigo-500"
+           iconColor="text-[var(--primary-color)]"
            iconBg="bg-indigo-500/10"
          />
          <StatCard 
@@ -130,10 +130,10 @@ const Stats = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Growth Chart */}
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm p-6">
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm p-6">
            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-white">Daily Acquisition</h2>
-              <p className="text-sm text-slate-400">Node generation over the last 7 days</p>
+              <h2 className="text-lg font-semibold text-color">Daily Acquisition</h2>
+              <p className="text-sm text-color-secondary">Node generation over the last 7 days</p>
            </div>
            <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -149,10 +149,10 @@ const Stats = () => {
         </div>
 
         {/* Expense Volume Chart */}
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm p-6">
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm p-6">
            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-white">Resource Allocation</h2>
-              <p className="text-sm text-slate-400">Expense volume over the last 7 days</p>
+              <h2 className="text-lg font-semibold text-color">Resource Allocation</h2>
+              <p className="text-sm text-color-secondary">Expense volume over the last 7 days</p>
            </div>
            <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -176,21 +176,21 @@ const Stats = () => {
       
       {/* Platform Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
-           <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50">
-              <h2 className="text-lg font-semibold text-white">Top Active Users</h2>
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+           <div className="p-6 border-b border-surface-border bg-surface-section/50">
+              <h2 className="text-lg font-semibold text-color">Top Active Users</h2>
            </div>
            <div className="p-0">
              <table className="w-full text-left">
-               <thead className="bg-[#171a21] border-b border-[#2d323b]">
+               <thead className="bg-surface-section border-b border-surface-border">
                  <tr>
-                   <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">User</th>
-                   <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Last Active</th>
+                   <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider">User</th>
+                   <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider text-right">Last Active</th>
                  </tr>
                </thead>
-               <tbody className="divide-y divide-[#2d323b] bg-[#1e232b]">
+               <tbody className="divide-y divide-[#2d323b] bg-surface-card">
                  {(topUsers || []).slice(0, 5).map(user => (
-                   <tr key={user._id} className="hover:bg-[#171a21]/50">
+                   <tr key={user._id} className="hover:bg-surface-section/50">
                      <td className="px-6 py-4 text-sm font-medium text-slate-200">{user.username}</td>
                      <td className="px-6 py-4 text-sm text-slate-500 text-right">
                        {new Date(user.lastActive).toLocaleDateString()}
@@ -207,21 +207,21 @@ const Stats = () => {
            </div>
         </div>
         
-        <div className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
-           <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50">
-              <h2 className="text-lg font-semibold text-white">System Logs</h2>
+        <div className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+           <div className="p-6 border-b border-surface-border bg-surface-section/50">
+              <h2 className="text-lg font-semibold text-color">System Logs</h2>
            </div>
            <div className="p-0">
              <table className="w-full text-left">
-               <thead className="bg-[#171a21] border-b border-[#2d323b]">
+               <thead className="bg-surface-section border-b border-surface-border">
                  <tr>
-                   <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
-                   <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Time</th>
+                   <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider">Action</th>
+                   <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider text-right">Time</th>
                  </tr>
                </thead>
-               <tbody className="divide-y divide-[#2d323b] bg-[#1e232b]">
+               <tbody className="divide-y divide-[#2d323b] bg-surface-card">
                  {(recentActivities || []).slice(0, 5).map(activity => (
-                   <tr key={activity._id} className="hover:bg-[#171a21]/50">
+                   <tr key={activity._id} className="hover:bg-surface-section/50">
                      <td className="px-6 py-4 text-sm font-medium text-slate-200">{activity.description || activity.action || 'System Action'}</td>
                      <td className="px-6 py-4 text-sm text-slate-500 text-right">
                        {new Date(activity.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}

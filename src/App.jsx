@@ -9,6 +9,8 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Growth from './pages/Growth';
 import Operations from './pages/Operations';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemeConfigurator from './components/ThemeConfigurator';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -31,42 +33,46 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      {!isAuthenticated ? (
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      ) : (
-        <div className="flex h-screen bg-[#0f111a] overflow-hidden relative">
-          <Sidebar isOpen={isSidebarOpen} toggle={() => setSidebarOpen(!isSidebarOpen)} />
-          
-          {/* Mobile Overlay */}
-          {isSidebarOpen && (
-            <div 
-              className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
-              onClick={() => setSidebarOpen(false)}
-            ></div>
-          )}
-
-          <div className="flex-1 flex flex-col overflow-hidden relative z-10 w-full">
-            <Header toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} />
+    <ThemeProvider>
+      <Router>
+        {!isAuthenticated ? (
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        ) : (
+          <div className="flex h-screen bg-surface-body overflow-hidden relative theme-transition">
+            <Sidebar isOpen={isSidebarOpen} toggle={() => setSidebarOpen(!isSidebarOpen)} />
             
-            <main className="flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar p-4 lg:p-8">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/users" element={hasIdentityAccess ? <Users /> : <Navigate to="/" replace />} />
-                <Route path="/stats" element={hasAnalyticsAccess ? <Stats /> : <Navigate to="/" replace />} />
-                <Route path="/settings" element={hasSettingsAccess ? <Settings /> : <Navigate to="/" replace />} />
-                <Route path="/growth" element={hasAnalyticsAccess ? <Growth /> : <Navigate to="/" replace />} />
-                <Route path="/operations" element={hasOperationsAccess ? <Operations /> : <Navigate to="/" replace />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
+            {/* Mobile Overlay */}
+            {isSidebarOpen && (
+              <div 
+                className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+                onClick={() => setSidebarOpen(false)}
+              ></div>
+            )}
+
+            <div className="flex-1 flex flex-col overflow-hidden relative z-10 w-full">
+              <Header toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} />
+              
+              <main className="flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar p-4 lg:p-8">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/users" element={hasIdentityAccess ? <Users /> : <Navigate to="/" replace />} />
+                  <Route path="/stats" element={hasAnalyticsAccess ? <Stats /> : <Navigate to="/" replace />} />
+                  <Route path="/settings" element={hasSettingsAccess ? <Settings /> : <Navigate to="/" replace />} />
+                  <Route path="/growth" element={hasAnalyticsAccess ? <Growth /> : <Navigate to="/" replace />} />
+                  <Route path="/operations" element={hasOperationsAccess ? <Operations /> : <Navigate to="/" replace />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+            </div>
+            
+            <ThemeConfigurator />
           </div>
-        </div>
-      )}
-    </Router>
+        )}
+      </Router>
+    </ThemeProvider>
   );
 }
 

@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Save, Shield, HardDrive, Zap, Rocket, History, AlertTriangle } from 'lucide-react';
 
 const SettingToggle = ({ title, description, enabled, onChange }) => (
-  <div className="flex items-center justify-between py-5 group border-b border-[#2d323b] last:border-0">
+  <div className="flex items-center justify-between py-5 group border-b border-surface-border last:border-0">
     <div>
-      <p className="text-sm font-semibold text-white">{title}</p>
-      <p className="text-xs text-slate-400 mt-1">{description}</p>
+      <p className="text-sm font-semibold text-color">{title}</p>
+      <p className="text-xs text-color-secondary mt-1">{description}</p>
     </div>
     <button 
       onClick={onChange}
-      className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${enabled ? 'bg-indigo-600' : 'bg-[#2d323b]'}`}
+      className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${enabled ? 'bg-[var(--primary-color)]' : 'bg-[#2d323b]'}`}
     >
       <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ${enabled ? 'translate-x-7' : 'translate-x-1'}`}></div>
     </button>
@@ -43,8 +43,8 @@ const Settings = () => {
     <div className="max-w-5xl space-y-6 pb-20 animate-in fade-in duration-500 mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Platform Settings</h1>
-            <p className="text-slate-400 text-sm">Configure core backend toggles and flags.</p>
+            <h1 className="text-2xl font-bold text-color mb-2">Platform Settings</h1>
+            <p className="text-color-secondary text-sm">Configure core backend toggles and flags.</p>
          </div>
       </div>
 
@@ -56,10 +56,10 @@ const Settings = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
-          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
-              <Shield className="w-5 h-5 text-indigo-500" />
-              <h2 className="text-lg font-semibold text-white">Access Control</h2>
+          <section className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-surface-border bg-surface-section/50 flex items-center gap-3">
+              <Shield className="w-5 h-5 text-[var(--primary-color)]" />
+              <h2 className="text-lg font-semibold text-color">Access Control</h2>
             </div>
             <div className="p-6">
               <SettingToggle 
@@ -77,15 +77,15 @@ const Settings = () => {
             </div>
           </section>
 
-          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+          <section className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-surface-border bg-surface-section/50 flex items-center gap-3">
               <HardDrive className="w-5 h-5 text-emerald-500" />
-              <h2 className="text-lg font-semibold text-white">System Storage</h2>
+              <h2 className="text-lg font-semibold text-color">System Storage</h2>
             </div>
             <div className="p-6 space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Log Capacity Limit</label>
-                <select className="w-full px-4 py-2.5 bg-[#171a21] border border-[#2d323b] rounded-lg text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors appearance-none">
+                <label className="text-sm font-medium text-color-secondary">Log Capacity Limit</label>
+                <select className="w-full px-4 py-2.5 bg-surface-section border border-surface-border rounded-lg text-color text-sm focus:outline-none focus:border-[var(--primary-color)] transition-colors appearance-none">
                    <option>Standard (30 Days)</option>
                    <option>Extended (90 Days)</option>
                 </select>
@@ -95,15 +95,15 @@ const Settings = () => {
         </div>
 
         <div className="space-y-6">
-          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+          <section className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-surface-border bg-surface-section/50 flex items-center gap-3">
               <Zap className="w-5 h-5 text-amber-500" />
-              <h2 className="text-lg font-semibold text-white">System Status</h2>
+              <h2 className="text-lg font-semibold text-color">System Status</h2>
             </div>
             <div className="p-6 space-y-6">
-               <div className="bg-[#171a21] border border-[#2d323b] rounded-xl p-4">
+               <div className="bg-surface-section border border-surface-border rounded-xl p-4">
                   <div className="flex justify-between items-center text-sm font-medium mb-3">
-                     <span className="text-slate-400">Database Uptime</span>
+                     <span className="text-color-secondary">Database Uptime</span>
                      <span className="text-emerald-500">100.00%</span>
                   </div>
                   <div className="flex gap-1 h-6">
@@ -122,10 +122,10 @@ const Settings = () => {
             </div>
           </section>
 
-          <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+          <section className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-surface-border bg-surface-section/50 flex items-center gap-3">
               <Rocket className="w-5 h-5 text-fuchsia-500" />
-              <h2 className="text-lg font-semibold text-white">Feature Flags</h2>
+              <h2 className="text-lg font-semibold text-color">Feature Flags</h2>
             </div>
             <div className="p-6">
               <SettingToggle 
@@ -143,12 +143,12 @@ const Settings = () => {
             </div>
           </section>
 
-          <div className="bg-[#1e232b] border border-indigo-500/30 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+          <div className="bg-surface-card border border-[var(--primary-color)]/30 rounded-2xl p-6 flex items-center justify-between shadow-sm">
              <div>
-                <p className="text-white font-semibold text-sm">Unsaved Changes</p>
-                <p className="text-sm text-slate-400">Review config before applying.</p>
+                <p className="text-color font-semibold text-sm">Unsaved Changes</p>
+                <p className="text-sm text-color-secondary">Review config before applying.</p>
              </div>
-             <button onClick={handleApply} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">
+             <button onClick={handleApply} className="px-6 py-2 bg-[var(--primary-color)] hover:opacity-80 text-color rounded-lg text-sm font-medium transition-colors">
                 Apply Settings
              </button>
           </div>
@@ -167,12 +167,12 @@ const Settings = () => {
           </div>
           <div className="p-6 flex items-center justify-between">
             <div>
-               <p className="text-sm font-semibold text-white">Execute Full Database Wipe</p>
-               <p className="text-sm text-slate-400 mt-1">This will permanently destroy all records.</p>
+               <p className="text-sm font-semibold text-color">Execute Full Database Wipe</p>
+               <p className="text-sm text-color-secondary mt-1">This will permanently destroy all records.</p>
             </div>
             <button 
                onClick={() => { if(window.confirm('CRITICAL WARNING: This will permanently wipe the entire backend. Type "CONFIRM" to proceed.') && prompt('Type CONFIRM')==='CONFIRM') alert('Database Wipe Initiated.'); }}
-               className="px-6 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium hover:bg-rose-700 transition-colors"
+               className="px-6 py-2 bg-rose-600 text-color rounded-lg text-sm font-medium hover:bg-rose-700 transition-colors"
             >
                Wipe Database
             </button>
@@ -182,26 +182,26 @@ const Settings = () => {
 
       {/* Admin Audit Trail */}
       {isRoot && (
-      <section className="bg-[#1e232b] border border-[#2d323b] rounded-2xl shadow-sm overflow-hidden mt-6">
-        <div className="p-6 border-b border-[#2d323b] bg-[#171a21]/50 flex items-center gap-3">
+      <section className="bg-surface-card border border-surface-border rounded-2xl shadow-sm overflow-hidden mt-6">
+        <div className="p-6 border-b border-surface-border bg-surface-section/50 flex items-center gap-3">
           <History className="w-5 h-5 text-amber-500" />
-          <h2 className="text-lg font-semibold text-white">System Audit Log</h2>
+          <h2 className="text-lg font-semibold text-color">System Audit Log</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-[#1e232b] border-b border-[#2d323b]">
+            <thead className="bg-surface-card border-b border-surface-border">
               <tr>
-                <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</th>
-                <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Admin</th>
-                <th className="px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Action Executed</th>
+                <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider">Time</th>
+                <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider">Admin</th>
+                <th className="px-6 py-3 text-xs font-semibold text-color-secondary uppercase tracking-wider">Action Executed</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2d323b] bg-[#1e232b]">
+            <tbody className="divide-y divide-[#2d323b] bg-surface-card">
                {auditLogs.map(log => (
-                  <tr key={log.id} className="hover:bg-[#171a21]/50 transition-colors">
-                     <td className="px-6 py-4 text-sm text-slate-400 whitespace-nowrap">{log.time}</td>
+                  <tr key={log.id} className="hover:bg-surface-section/50 transition-colors">
+                     <td className="px-6 py-4 text-sm text-color-secondary whitespace-nowrap">{log.time}</td>
                      <td className="px-6 py-4 text-sm font-medium text-slate-200">{log.admin}</td>
-                     <td className="px-6 py-4 text-sm text-slate-300">{log.action}</td>
+                     <td className="px-6 py-4 text-sm text-color-secondary">{log.action}</td>
                   </tr>
                ))}
             </tbody>
