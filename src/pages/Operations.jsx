@@ -37,6 +37,19 @@ const Operations = () => {
   const [newBug, setNewBug] = useState('');
   const [reportingBug, setReportingBug] = useState(false);
   const [message, setMessage] = useState('');
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [adminReply, setAdminReply] = useState('');
+  const [ticketStatus, setTicketStatus] = useState('closed');
+
+  const fetchTickets = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/api/admin/support', { headers: { 'Authorization': `Bearer ${token}` } });
+      setTickets(res.data);
+    } catch (err) {
+      console.error('Failed to fetch tickets');
+    }
+  };
 
   const fetchBugs = async () => {
     try {
@@ -50,6 +63,7 @@ const Operations = () => {
 
   useEffect(() => {
     fetchBugs();
+    fetchTickets();
   }, []);
 
   const submitBug = async () => {
@@ -69,15 +83,24 @@ const Operations = () => {
     }
   };
 
-  const resolveBug = async (id) => {
+  const respondTicket = async () => {
+    if (!selectedTicket || !adminReply) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`/api/admin/release/bugs/${id}/resolve`, {}, { headers: { 'Authorization': `Bearer ${token}` } });
-      fetchBugs();
-      setMessage('Bug marked as resolved!');
+      const res = await axios.put(`/api/admin/support/${selectedTicket._id}`, 
+        { status: ticketStatus, adminResponse: adminReply }, 
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+      setMessage(`Ticket #${selectedTicket._id.slice(-6)} updated to ${ticketStatus}`);
+      
+      // Keep modal open but update the local ticket data and clear the input
+      setSelectedTicket(res.data);
+      setAdminReply('');
+      
+      fetchTickets();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      setMessage('Failed to resolve bug');
+      setMessage('Failed to update ticket');
     }
   };
 
@@ -156,11 +179,46 @@ const Operations = () => {
            <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-section/50">
               <h2 className="text-lg font-semibold text-color flex items-center gap-2"><LifeBuoy className="w-5 h-5 text-blue-500"/> Support Tickets</h2>
            </div>
-           <div className="flex-1 min-h-[250px] flex items-center justify-center p-8 text-center text-slate-500">
+           <div className="flex-1 min-h-[400px] overflow-y-auto px-6 py-4 custom-scrollbar">
              {tickets.length > 0 ? (
-               <div className="w-full h-full text-left">{/* Render items here if any */}</div>
+               <div className="space-y-4">
+                 {tickets.map(ticket => (
+                   <div key={ticket._id} className={`p-4 rounded-xl border transition-all ${
+                     ticket.status === 'closed' ? 'bg-surface-section border-surface-border opacity-60' : 'bg-surface-card border-surface-border hover:border-[#3d424b]'
+                   }`}>
+                     <div className="flex justify-between items-start mb-2">
+                       <div>
+                         <span className="text-[10px] font-black uppercase text-slate-500 tracking-tighter block mb-1">Ticket ID: {ticket._id.slice(-8)}</span>
+                         <h4 className="font-bold text-color leading-tight">{ticket.subject}</h4>
+                       </div>
+                       <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                         ticket.status === 'open' ? 'bg-amber-500/20 text-amber-500' :
+                         ticket.status === 'in-progress' ? 'bg-blue-500/20 text-blue-500' :
+                         'bg-emerald-500/20 text-emerald-500 text-emerald-400'
+                       }`}>
+                         {ticket.status}
+                       </span>
+                     </div>
+                     <p className="text-sm text-color-secondary line-clamp-2 mb-3 leading-relaxed">{ticket.message}</p>
+                     <div className="flex items-center justify-between border-t border-surface-border pt-3">
+                        <div className="flex items-center gap-2">
+                           <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+                             {ticket.user?.username?.[0] || 'U'}
+                           </div>
+                           <span className="text-xs font-medium text-slate-500">{ticket.user?.username || 'Unknown User'}</span>
+                        </div>
+                        <button 
+                          onClick={() => { setSelectedTicket(ticket); setAdminReply(ticket.adminResponse || ''); setTicketStatus(ticket.status === 'closed' ? 'closed' : 'in-progress'); }}
+                          className="text-xs font-bold text-indigo-500 hover:underline flex items-center gap-1"
+                        >
+                          <LifeBuoy className="w-3 h-3" /> Manage Ticket
+                        </button>
+                     </div>
+                   </div>
+                 ))}
+               </div>
              ) : (
-               <div className="flex flex-col items-center gap-3">
+               <div className="flex flex-col items-center gap-3 mt-20">
                  <CheckCircle className="w-10 h-10 text-emerald-500/50" />
                  <p className="text-sm font-medium">No active support tickets found.</p>
                </div>
@@ -332,6 +390,86 @@ const Operations = () => {
         </div>
 
       </div>
+
+       {/* Ticket Management Dialog Overlay */}
+       {selectedTicket && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-surface-card border border-surface-border w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95">
+               <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-section/50">
+                  <h3 className="font-bold text-color flex items-center gap-2 uppercase tracking-widest text-xs">
+                    <LifeBuoy className="w-4 h-4 text-blue-500" /> Ticket Control Center
+                  </h3>
+                  <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-surface-section rounded-lg transition-colors">
+                    <XCircle className="w-5 h-5 text-slate-500" />
+                  </button>
+               </div>
+               
+               <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                  <div className="space-y-4">
+                    <div className="bg-surface-section/50 border border-surface-border p-4 rounded-xl">
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Original Inquiry</p>
+                       <h2 className="text-xl font-bold text-color leading-tight">"{selectedTicket.subject}"</h2>
+                       <p className="text-slate-400 text-sm italic mt-3 leading-relaxed">"{selectedTicket.message}"</p>
+                    </div>
+
+                    {/* Chat History */}
+                    {selectedTicket.replies && selectedTicket.replies.length > 0 && (
+                       <div className="space-y-3 pt-4">
+                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Conversation Thread</p>
+                          {selectedTicket.replies.map((reply, idx) => (
+                             <div key={idx} className={`p-3 rounded-xl border ${
+                                reply.isAdmin 
+                                ? 'bg-emerald-500/5 border-emerald-500/20 text-right ml-12' 
+                                : 'bg-indigo-500/5 border-indigo-500/20 mr-12'
+                             }`}>
+                                <p className={`text-[9px] font-bold uppercase mb-1 ${reply.isAdmin ? 'text-emerald-500' : 'text-indigo-400'}`}>
+                                   {reply.isAdmin ? 'Support Agent' : 'User'}
+                                </p>
+                                <p className="text-xs text-slate-300 leading-relaxed">{reply.message}</p>
+                             </div>
+                          ))}
+                       </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-4 pt-6 border-t border-surface-border">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Reply to User</label>
+                       <textarea 
+                         value={adminReply}
+                         onChange={(e) => setAdminReply(e.target.value)}
+                         placeholder="Type your message here..."
+                         className="w-full bg-surface-section border border-surface-border rounded-xl p-4 text-sm text-color focus:outline-none focus:border-indigo-500 min-h-[100px] shadow-inner"
+                       />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Status Protocol</label>
+                          <select 
+                            value={ticketStatus}
+                            onChange={(e) => setTicketStatus(e.target.value)}
+                            className="w-full bg-surface-section border border-surface-border rounded-lg px-4 py-2 text-sm text-color focus:outline-none"
+                          >
+                             <option value="open">Open</option>
+                             <option value="in-progress">In-Progress</option>
+                             <option value="closed">Closed / Solved</option>
+                          </select>
+                       </div>
+                       <div className="flex items-end">
+                          <button 
+                            onClick={respondTicket}
+                            className="w-full h-[40px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-lg shadow-emerald-900/40 transition-all active:scale-95"
+                          >
+                             Send & Update
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+       )}
     </div>
   );
 };
