@@ -104,6 +104,21 @@ const Operations = () => {
     }
   };
 
+  const runPhoneReminders = async () => {
+    setMessage('Initiating bulk phone reminders protocol...');
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post('/api/admin/maintenance/phone-reminders', {}, { 
+        headers: { 'Authorization': `Bearer ${token}` } 
+      });
+      setMessage(`SUCCESS: ${res.data.msg}`);
+    } catch (err) {
+      setMessage(`ERROR: ${err.response?.data?.msg || 'Maintenance process failed'}`);
+    } finally {
+      setTimeout(() => setMessage(''), 8000);
+    }
+  };
+
   const handleAction = async (type, action) => {
     setMessage(`Executing [${action.toUpperCase()}] protocol on ${type}...`);
     try {
@@ -295,6 +310,12 @@ const Operations = () => {
                  >
                     <Settings className="w-4 h-4" /> Get Beta Link
                  </button>
+                  <button 
+                    onClick={runPhoneReminders}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500 text-sm font-medium hover:bg-amber-500 hover:text-color transition-colors"
+                  >
+                     <ShieldAlert className="w-4 h-4" /> Remind Profiles
+                  </button>
                   <button 
                     onClick={() => handleAction('System', 'Push to Git')} 
                     disabled={!canDeploy}
