@@ -81,14 +81,16 @@ const Login = () => {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1">Organization Email</label>
                   <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-[var(--primary-color)] transition-colors" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[var(--primary-color)] transition-colors pointer-events-none" />
                     <input 
                       type="email" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@paywiseapp.com"
-                      className="w-full pl-14 pr-6 py-5 bg-white/5 border border-white/10 rounded-[24px] text-color placeholder:text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-[var(--primary-color)]/50 transition-all font-semibold text-lg"
+                      className="w-full pl-10 pr-4 py-4 bg-white/5 border border-white/10 rounded-[20px] text-color placeholder:text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-[var(--primary-color)]/50 transition-all font-medium text-sm"
                       required
+                      autoComplete="email"
+                      spellCheck={false}
                     />
                   </div>
                 </div>

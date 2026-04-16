@@ -11,6 +11,10 @@ import Growth from './pages/Growth';
 import Operations from './pages/Operations';
 import { ThemeProvider } from './context/ThemeContext';
 import ThemeConfigurator from './components/ThemeConfigurator';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://paywise-backend-lemon.vercel.app/api' : '/api');
+axios.defaults.baseURL = API_URL;
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);

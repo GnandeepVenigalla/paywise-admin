@@ -5,7 +5,7 @@ import {
   Users as UsersIcon, ShieldCheck, UserX, Crown, 
   Terminal, ShieldAlert, RefreshCw, CheckCircle2,
   Plus, X, UserPlus, Shield, Save, Clock, Bell, Snowflake, AlertTriangle,
-  Activity, CreditCard, ChevronRight, Fingerprint, MapPin, Database, Receipt, Eye
+  Activity, CreditCard, ChevronRight, Fingerprint, MapPin, Database, Receipt, Eye, DollarSign
 } from 'lucide-react';
 
 const Users = () => {
@@ -24,6 +24,8 @@ const Users = () => {
   const [newEmployee, setNewEmployee] = useState({ email: '', username: '', role: 'read_only' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserProfile, setSelectedUserProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = currentUser.adminRole || 'read_only';
@@ -118,6 +120,21 @@ const Users = () => {
       };
     }
   }, [isRoot]);
+
+  // Fetch enriched profile when a user is selected
+  useEffect(() => {
+    if (!selectedUser) { setSelectedUserProfile(null); return; }
+    const load = async () => {
+      setProfileLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        const { data } = await axios.get(`/api/admin/users/${selectedUser._id}/profile`, { headers: { Authorization: `Bearer ${token}` } });
+        setSelectedUserProfile(data);
+      } catch { setSelectedUserProfile(null); }
+      finally { setProfileLoading(false); }
+    };
+    load();
+  }, [selectedUser?._id]);
 
   const handleAddEmployee = async (e) => {
     e.preventDefault();
@@ -515,6 +532,9 @@ const Users = () => {
                 <div>
                   <h2 className="text-xl font-bold flex items-center gap-2">
                     {selectedUser.username}
+                    {selectedUser.isVerified
+                      ? <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      : <AlertTriangle className="w-4 h-4 text-rose-500" />}
                   </h2>
                   <p className="text-color-secondary text-xs mt-1">UID: {getPIIDisplay(selectedUser._id, 'uid', selectedUser._id)}</p>
                 </div>
@@ -525,24 +545,133 @@ const Users = () => {
             </div>
 
             {/* Body */}
-            <div className="p-6 space-y-6 flex-1">
-              <h3 className="text-sm font-semibold text-color border-b border-surface-border pb-2">User Details</h3>
-              
-              <div className="space-y-4">
-                 <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
-                   <span className="text-sm text-color-secondary flex items-center gap-2"><Mail className="w-4 h-4"/> Email Status</span>
-                   <span className="text-sm font-medium text-color">{getPIIDisplay(selectedUser.email, 'email', selectedUser._id)}</span>
-                 </div>
-                 <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
-                   <span className="text-sm text-color-secondary flex items-center gap-2"><Phone className="w-4 h-4"/> Phone Status</span>
-                   <span className="text-sm font-medium text-color">{getPIIDisplay(selectedUser.phone || 'N/A', 'phone', selectedUser._id)}</span>
-                 </div>
-                 <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
-                   <span className="text-sm text-color-secondary flex items-center gap-2"><Calendar className="w-4 h-4"/> Joined</span>
-                   <span className="text-sm font-medium text-color">{new Date(selectedUser.createdAt).toLocaleDateString()}</span>
-                 </div>
+            {profileLoading ? (
+              <div className="flex-1 flex items-center justify-center">
+                <RefreshCw className="w-6 h-6 text-[var(--primary-color)] animate-spin" />
               </div>
-            </div>
+            ) : (
+              <div className="p-6 space-y-6 flex-1">
+
+                {/* ── Activity Stats ── */}
+                <div>
+                  <h3 className="text-xs font-bold text-color-secondary uppercase tracking-widest mb-3">Activity</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[[
+                      <Receipt className="w-4 h-4" />, 'Expenses', selectedUserProfile?.stats?.expenseCount ?? '—'
+                    ],[
+                      <MapPin className="w-4 h-4" />, 'Groups', selectedUserProfile?.stats?.groupCount ?? '—'
+                    ],[
+                      <CreditCard className="w-4 h-4" />, 'Loans', selectedUserProfile?.stats?.loanCount ?? '—'
+                    ],[
+                      <Activity className="w-4 h-4" />, 'Recurring Bills', selectedUserProfile?.stats?.recurringCount ?? '—'
+                    ]].map(([icon, label, val], i) => (
+                      <div key={i} className="flex items-center gap-3 bg-surface-section p-3 rounded-xl border border-surface-border">
+                        <div className="text-[var(--primary-color)] opacity-70">{icon}</div>
+                        <div>
+                          <p className="text-[10px] text-color-secondary uppercase tracking-wider">{label}</p>
+                          <p className="text-lg font-bold text-color">{val}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Contact & Identity ── */}
+                <div>
+                  <h3 className="text-xs font-bold text-color-secondary uppercase tracking-widest mb-3">Contact & Identity</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><Mail className="w-4 h-4"/> Email</span>
+                      <span className="text-sm font-medium text-color">{getPIIDisplay(selectedUser.email, 'email', selectedUser._id)}</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><Phone className="w-4 h-4"/> Phone</span>
+                      <span className="text-sm font-medium text-color">{getPIIDisplay(selectedUser.phone || 'Not set', 'phone', selectedUser._id)}</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><Calendar className="w-4 h-4"/> Joined</span>
+                      <span className="text-sm font-medium text-color">{new Date(selectedUser.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><Clock className="w-4 h-4"/> Last Active</span>
+                      <span className="text-sm font-medium text-color">{selectedUser.lastActive ? new Date(selectedUser.lastActive).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Preferences ── */}
+                <div>
+                  <h3 className="text-xs font-bold text-color-secondary uppercase tracking-widest mb-3">Preferences</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><Database className="w-4 h-4"/> Default Currency</span>
+                      <span className="text-sm font-bold text-color">{selectedUser.defaultCurrency || 'USD'}</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><DollarSign className="w-4 h-4" style={{width:16,height:16}}/> Monthly Budget</span>
+                      <span className="text-sm font-bold text-color">{selectedUser.monthlyBudget ? `${selectedUser.defaultCurrency || '$'} ${selectedUser.monthlyBudget.toLocaleString()}` : 'Not set'}</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                      <span className="text-sm text-color-secondary flex items-center gap-2"><Eye className="w-4 h-4"/> Profile Visibility</span>
+                      <span className="text-sm font-bold text-color capitalize">{selectedUser.profileVisibility || 'everyone'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Security ── */}
+                <div>
+                  <h3 className="text-xs font-bold text-color-secondary uppercase tracking-widest mb-3">Security & Features</h3>
+                  <div className="space-y-2">
+                    {[[
+                      <Fingerprint className="w-4 h-4" />, 'Biometric Login', selectedUser.biometricEnabled
+                    ],[
+                      <Bell className="w-4 h-4" />, 'Push Notifications', selectedUser.notificationsEnabled !== false
+                    ],[
+                      <ShieldCheck className="w-4 h-4" />, 'Email Verified', selectedUser.isVerified
+                    ]].map(([icon, label, active], i) => (
+                      <div key={i} className="flex justify-between items-center bg-surface-section p-3 rounded-lg border border-surface-border">
+                        <span className="text-sm text-color-secondary flex items-center gap-2">{icon} {label}</span>
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
+                          active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-surface-section text-color-secondary border border-surface-border'
+                        }`}>{active ? 'Enabled' : 'Disabled'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Actions ── */}
+                {canManageUsers && selectedUser.email !== currentUser.email && (
+                  <div className="pt-2 border-t border-surface-border space-y-2">
+                    <h3 className="text-xs font-bold text-color-secondary uppercase tracking-widest mb-3">Actions</h3>
+                    <button
+                      onClick={() => { handleAction(selectedUser._id, selectedUser.isVerified === false ? 'unfreeze' : 'freeze'); }}
+                      disabled={actionLoading === selectedUser._id}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-surface-section border border-surface-border text-color-secondary hover:text-color hover:bg-surface-hover transition-colors"
+                    >
+                      <Snowflake className="w-4 h-4" />
+                      {selectedUser.isVerified === false ? 'Unfreeze Account' : 'Freeze Account'}
+                    </button>
+                    <button
+                      onClick={() => { handleAction(selectedUser._id, 'revoke'); }}
+                      disabled={actionLoading === selectedUser._id}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-amber-500/5 border border-amber-500/20 text-amber-500 hover:bg-amber-500/10 transition-colors"
+                    >
+                      <Ban className="w-4 h-4" /> Revoke Access
+                    </button>
+                    {['root', 'super_admin'].includes(userRole) && (
+                      <button
+                        onClick={() => { handleAction(selectedUser._id, 'purge'); setSelectedUser(null); }}
+                        disabled={actionLoading === selectedUser._id}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-rose-500/5 border border-rose-500/20 text-rose-500 hover:bg-rose-500/10 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" /> Permanently Delete
+                      </button>
+                    )}
+                  </div>
+                )}
+
+              </div>
+            )}
           </div>
         </div>
       )}
