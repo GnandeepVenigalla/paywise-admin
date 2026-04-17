@@ -17,7 +17,7 @@ const Login = () => {
     try {
       if (requireOtp) {
         // Step 2: Verify OTP
-        const response = await axios.post('/api/auth/verify-otp', { email, otp });
+        const response = await axios.post('/auth/verify-otp', { email, otp });
         const userData = response.data.user;
         
         // Double check admin domain on return
@@ -38,7 +38,7 @@ const Login = () => {
            return;
         }
 
-        await axios.post('/api/auth/admin-login-otp', { email });
+        await axios.post('/auth/admin-login-otp', { email });
         setRequireOtp(true);
       }
     } catch (err) {
